@@ -1,0 +1,8 @@
+prefix=/home/navlab-nuc/rover_ros_ws/devel/.private/sensing
+
+Name: sensing
+Description: Description of sensing
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

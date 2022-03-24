@@ -1,0 +1,56 @@
+[ 80%] Built target apriltag
+[ 85%] Built target opencv_demo
+[ 90%] Built target apriltag_demo
+[100%] Built target apriltag_python
+[36mInstall the project...[0m
+-- Install configuration: "Release"
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/apriltag.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/apriltag_math.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/apriltag_pose.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/doubles.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/doubles_floats_impl.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/floats.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/g2d.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/getopt.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/homography.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/image_types.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/image_u8.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/image_u8x3.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/image_u8x4.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/matd.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/math_util.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/pam.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/pjpeg.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/pnm.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/postscript_utils.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/string_util.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/svd22.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/time_util.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/timeprofile.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/unionfind.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/workerpool.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/zarray.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/zhash.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/zmaxheap.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tag16h5.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tag25h9.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tag36h10.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tag36h11.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tagCircle21h7.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tagCircle49h12.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tagCustom48h12.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tagStandard41h12.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tagStandard52h13.h
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/lib/libapriltag.so.3.2.0
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/lib/libapriltag.so.3
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/lib/libapriltag.so
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/share/apriltag/cmake/apriltagTargets.cmake
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/share/apriltag/cmake/apriltagTargets-release.cmake
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/share/apriltag/cmake/apriltagConfig.cmake
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/share/apriltag/cmake/apriltagConfigVersion.cmake
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/lib/pkgconfig/apriltag.pc
+-- Installing: /home/navlab-nuc/.local/lib/python3.8/site-packages/apriltag.cpython-38-x86_64-linux-gnu.so
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/bin/opencv_demo
+-- Set runtime path of "/home/navlab-nuc/rover_ros_ws/devel/bin/opencv_demo" to ""
+-- Installing: /home/navlab-nuc/rover_ros_ws/devel/bin/apriltag_demo
+-- Set runtime path of "/home/navlab-nuc/rover_ros_ws/devel/bin/apriltag_demo" to ""

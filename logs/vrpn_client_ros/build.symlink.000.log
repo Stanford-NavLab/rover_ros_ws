@@ -1,0 +1,25 @@
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/lib/libvrpn_client_ros.so
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/lib/vrpn_client_ros/vrpn_tracker_node
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/lib/vrpn_client_ros/vrpn_client_node
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/lib/pkgconfig/vrpn_client_ros.pc
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/share/vrpn_client_ros/cmake/vrpn_client_rosConfig.cmake
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/share/vrpn_client_ros/cmake/vrpn_client_rosConfig-version.cmake
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/vrpn_client_ros/cmake.lock, /home/navlab-nuc/rover_ros_ws_cb/devel/./cmake.lock)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/vrpn_client_ros/lib/libvrpn_client_ros.so, /home/navlab-nuc/rover_ros_ws_cb/devel/lib/libvrpn_client_ros.so)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/vrpn_client_ros/lib/vrpn_client_ros/vrpn_tracker_node, /home/navlab-nuc/rover_ros_ws_cb/devel/lib/vrpn_client_ros/vrpn_tracker_node)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/vrpn_client_ros/lib/vrpn_client_ros/vrpn_client_node, /home/navlab-nuc/rover_ros_ws_cb/devel/lib/vrpn_client_ros/vrpn_client_node)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/vrpn_client_ros/lib/pkgconfig/vrpn_client_ros.pc, /home/navlab-nuc/rover_ros_ws_cb/devel/lib/pkgconfig/vrpn_client_ros.pc)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/vrpn_client_ros/share/vrpn_client_ros/cmake/vrpn_client_rosConfig.cmake, /home/navlab-nuc/rover_ros_ws_cb/devel/share/vrpn_client_ros/cmake/vrpn_client_rosConfig.cmake)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/vrpn_client_ros/share/vrpn_client_ros/cmake/vrpn_client_rosConfig-version.cmake, /home/navlab-nuc/rover_ros_ws_cb/devel/share/vrpn_client_ros/cmake/vrpn_client_rosConfig-version.cmake)
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/lib/libvrpn_client_ros.so
+Already unlinked: {}
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/lib/vrpn_client_ros/vrpn_tracker_node
+Already unlinked: {}
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/lib/vrpn_client_ros/vrpn_client_node
+Already unlinked: {}
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/lib/pkgconfig/vrpn_client_ros.pc
+Already unlinked: {}
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/share/vrpn_client_ros/cmake/vrpn_client_rosConfig.cmake
+Already unlinked: {}
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/share/vrpn_client_ros/cmake/vrpn_client_rosConfig-version.cmake
+Already unlinked: {}

@@ -1,0 +1,1 @@
+/home/navlab-nuc/rover_ros_ws/devel/.private/controller/share/controller/cmake/controllerConfig.cmake

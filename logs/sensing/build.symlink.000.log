@@ -1,0 +1,13 @@
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/lib/pkgconfig/sensing.pc
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/share/sensing/cmake/sensingConfig-version.cmake
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/share/sensing/cmake/sensingConfig.cmake
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/sensing/cmake.lock, /home/navlab-nuc/rover_ros_ws_cb/devel/./cmake.lock)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/sensing/lib/pkgconfig/sensing.pc, /home/navlab-nuc/rover_ros_ws_cb/devel/lib/pkgconfig/sensing.pc)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/sensing/share/sensing/cmake/sensingConfig-version.cmake, /home/navlab-nuc/rover_ros_ws_cb/devel/share/sensing/cmake/sensingConfig-version.cmake)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/sensing/share/sensing/cmake/sensingConfig.cmake, /home/navlab-nuc/rover_ros_ws_cb/devel/share/sensing/cmake/sensingConfig.cmake)
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/lib/pkgconfig/sensing.pc
+Already unlinked: {}
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/share/sensing/cmake/sensingConfig-version.cmake
+Already unlinked: {}
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/share/sensing/cmake/sensingConfig.cmake
+Already unlinked: {}

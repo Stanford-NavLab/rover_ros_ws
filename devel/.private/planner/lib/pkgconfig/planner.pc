@@ -1,0 +1,8 @@
+prefix=/home/navlab-nuc/rover_ros_ws/devel/.private/planner
+
+Name: planner
+Description: Description of planner
+Version: 0.0.0
+Cflags: -I/home/navlab-nuc/rover_ros_ws/devel/.private/planner/include
+Libs: -L${prefix}/lib 
+Requires: 

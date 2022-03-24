@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/navlab-nuc/rover_ros_ws/devel/.private/planner/setup.sh

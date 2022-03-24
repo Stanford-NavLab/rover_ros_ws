@@ -1,0 +1,25 @@
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/lib/libcv_camera.so
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/lib/libcv_camera_nodelet.so
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/lib/cv_camera/cv_camera_node
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/lib/pkgconfig/cv_camera.pc
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/share/cv_camera/cmake/cv_cameraConfig-version.cmake
+Symlinking /home/navlab-nuc/rover_ros_ws/devel/share/cv_camera/cmake/cv_cameraConfig.cmake
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/cv_camera/cmake.lock, /home/navlab-nuc/rover_ros_ws_cb/devel/./cmake.lock)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/cv_camera/lib/libcv_camera.so, /home/navlab-nuc/rover_ros_ws_cb/devel/lib/libcv_camera.so)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/cv_camera/lib/libcv_camera_nodelet.so, /home/navlab-nuc/rover_ros_ws_cb/devel/lib/libcv_camera_nodelet.so)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/cv_camera/lib/cv_camera/cv_camera_node, /home/navlab-nuc/rover_ros_ws_cb/devel/lib/cv_camera/cv_camera_node)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/cv_camera/lib/pkgconfig/cv_camera.pc, /home/navlab-nuc/rover_ros_ws_cb/devel/lib/pkgconfig/cv_camera.pc)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/cv_camera/share/cv_camera/cmake/cv_cameraConfig-version.cmake, /home/navlab-nuc/rover_ros_ws_cb/devel/share/cv_camera/cmake/cv_cameraConfig-version.cmake)
+Cleaning: (/home/navlab-nuc/rover_ros_ws_cb/devel/.private/cv_camera/share/cv_camera/cmake/cv_cameraConfig.cmake, /home/navlab-nuc/rover_ros_ws_cb/devel/share/cv_camera/cmake/cv_cameraConfig.cmake)
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/lib/libcv_camera.so
+Already unlinked: {}
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/lib/libcv_camera_nodelet.so
+Already unlinked: {}
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/lib/cv_camera/cv_camera_node
+Already unlinked: {}
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/lib/pkgconfig/cv_camera.pc
+Already unlinked: {}
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/share/cv_camera/cmake/cv_cameraConfig-version.cmake
+Already unlinked: {}
+Unlinking: /home/navlab-nuc/rover_ros_ws_cb/devel/share/cv_camera/cmake/cv_cameraConfig.cmake
+Already unlinked: {}

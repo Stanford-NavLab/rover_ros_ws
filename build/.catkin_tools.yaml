@@ -1,0 +1,6 @@
+devel_space: /home/navlab-nuc/rover_ros_ws/devel
+install: false
+install_space: /home/navlab-nuc/rover_ros_ws/install
+profile: default
+source_space: /home/navlab-nuc/rover_ros_ws/src
+workspace: /home/navlab-nuc/rover_ros_ws
