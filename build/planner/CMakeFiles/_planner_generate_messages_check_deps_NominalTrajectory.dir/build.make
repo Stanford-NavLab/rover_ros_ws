@@ -54,7 +54,7 @@ CMAKE_BINARY_DIR = /home/navlab-nuc/rover_ros_ws/build/planner
 include CMakeFiles/_planner_generate_messages_check_deps_NominalTrajectory.dir/progress.make
 
 CMakeFiles/_planner_generate_messages_check_deps_NominalTrajectory:
-	catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py planner /home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg planner/Control:planner/State
+	catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py planner /home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg planner/State:planner/Control
 
 _planner_generate_messages_check_deps_NominalTrajectory: CMakeFiles/_planner_generate_messages_check_deps_NominalTrajectory
 _planner_generate_messages_check_deps_NominalTrajectory: CMakeFiles/_planner_generate_messages_check_deps_NominalTrajectory.dir/build.make

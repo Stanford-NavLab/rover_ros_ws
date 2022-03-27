@@ -71,8 +71,8 @@ CMakeFiles/planner_generate_messages_eus: /home/navlab-nuc/rover_ros_ws/devel/.p
 
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/roseus/ros/planner/msg/NominalTrajectory.l: /opt/ros/noetic/lib/geneus/gen_eus.py
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/roseus/ros/planner/msg/NominalTrajectory.l: /home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg
-/home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/roseus/ros/planner/msg/NominalTrajectory.l: /home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/roseus/ros/planner/msg/NominalTrajectory.l: /home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg
+/home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/roseus/ros/planner/msg/NominalTrajectory.l: /home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/navlab-nuc/rover_ros_ws/build/planner/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating EusLisp code from planner/NominalTrajectory.msg"
 	catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/geneus/cmake/../../../lib/geneus/gen_eus.py /home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg -Iplanner:/home/navlab-nuc/rover_ros_ws/src/planner/msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p planner -o /home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/roseus/ros/planner/msg
 

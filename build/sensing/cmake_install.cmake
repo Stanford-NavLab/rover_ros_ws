@@ -129,6 +129,10 @@ file(INSTALL DESTINATION "/home/navlab-nuc/rover_ros_ws/install" TYPE FILE FILES
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  include("/home/navlab-nuc/rover_ros_ws/build/sensing/catkin_generated/safe_execute_install.cmake")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/navlab-nuc/rover_ros_ws/build/sensing/catkin_generated/installspace/sensing.pc")
 endif()
 
@@ -141,6 +145,10 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/sensing" TYPE FILE FILES "/home/navlab-nuc/rover_ros_ws/src/sensing/package.xml")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/sensing" TYPE PROGRAM FILES "/home/navlab-nuc/rover_ros_ws/build/sensing/catkin_generated/installspace/mocap.py")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)

@@ -1,9 +1,11 @@
-# Utilities for planner nodes
+# General utility for planner nodes
 
-import rospy
 import numpy as np
+import time
 
-from planner.msg import State, Control, NominalTrajectory
+from planner.reachability_utils import create_motion_sensing_pZ, compute_reachable_sets_position_sensing, is_collision_free
+
+from planner.msg import State, Control
 from controller.controller_utils import wrap_angle
 
 
@@ -132,84 +134,125 @@ def trajectory_parameter_to_nominal_trajectory(kw, kv, xnom0, t_plan, dt, max_ac
     return [xnom, unom]
 
 
-def generate_robot_matrices(x_nom, u_nom, Q_lqr, R_lqr, dt):
+def check_trajectory_parameter_safety(kw, kv, x_nom0, Xaug0, P0, env, params):
+    """Check if trajectory parameter is safe
+
+    TODO
+    
     """
-    Generate A, B, C and K matrices for robot based on given nominal state and input vector.
+    #create nominal trajectory for given trajectory parameter
+    [xnom_seg, unom_seg] = trajectory_parameter_to_nominal_trajectory(
+        kw, kv, x_nom0, params['t_seg'], params['dt'], params['max_acc_mag'])
 
-    Parameters
-    ----------
-    x_nom : np.array (4x1)
-        nominal state
-    u_nom : np.array (2x1)
-        nominal input
-    Q_lqr : np.array (4x4)
-        LQR state cost weight matrix
-    R_lqr: np.array (2x2)
-        LQR input cost weight matrix
-    dt: float
-        discrete time-step
+    #create motion and sensing pZs along nominal trajectory
+    [WpZ, VpZs, Rhats] = create_motion_sensing_pZ(
+        xnom_seg, params['Q'], params['R'], params['m'], 
+        env['bias_area_lims'], env['regular_bias'], 
+        env['different_bias'])
 
-    Returns
-    -------
-    A : np.array (4x4)
-        linearized motion model matrix
-    B : np.array (4x2)
-        linearized control input matrix:
-    C : np.array (3x4)
-        measurement matrix
-    K : np.array (2x4)
-        control feedback gain matrix: 
+    #compute reachable sets for the trajectory with either range sensing or position sensing
+    [Xaug, Zaug, P_all] = compute_reachable_sets_position_sensing(
+        xnom_seg, unom_seg, Xaug0, P0, params['Q'], WpZ, VpZs, Rhats, 
+        params['Q_lqr'], params['R_lqr'], params['m'], params['dt'])
+
+    #check if trajectory is safe
+    isSafe = is_collision_free(Zaug, env['obstZ'], 
+        collisionCheckOrder=params['collision_check_zonotope_order'], 
+        distCheck=params['shouldCheckDist'], 
+        dist_threshold=params['collision_check_dist_threshold'])
+
+    return isSafe, Xaug, Zaug, P_all, xnom_seg, unom_seg
+
+
+def is_trajectory_inside_region(x_nom, region_array):
+    """Check if nominal trajectory is inside specified region
+
+    TODO
+    
     """
-    # Get state dimension. 
-    state_dim = x_nom.shape[0]
-    input_dim = u_nom.shape[0]
-    measurement_dim = 3  # assuming 2D position and heading measurement
+    N = x_nom.shape[1]  # Length of trajectory
 
-    # Form linearized motion model matrix
-    A = np.identity((state_dim))
-    A[0,2] = -x_nom[3,0]*np.sin(x_nom[2,0])*dt
-    A[0,3] = np.cos(x_nom[2,0])*dt
-    A[1,2] = x_nom[3,0]*np.cos(x_nom[2,0])*dt
-    A[1,3] = np.sin(x_nom[2,0])*dt
+    # Get 1D distances of points from region center and check if any are less than both the height and the width
+    points_xy_dists = np.abs(x_nom[0:2,:] - np.tile(region_array[0:2,[0]], (1,N)))
+    isWithinHeightWidth = points_xy_dists < np.tile(region_array[[3,2],[0]].reshape(2,1), (1,N))
+    isInside = np.any(np.logical_and(isWithinHeightWidth[0,:], isWithinHeightWidth[1,:]))
 
-    # Form linearized control input matrix
-    B = np.zeros((state_dim,input_dim))
-    B[2,0] = dt; B[3,1] = dt
-
-    # Form measurement matrix
-    C = np.zeros((measurement_dim, state_dim))
-    C[0,0] = 1; C[1,1] = 1; C[2,2] = 1
-
-    # Compute control feedback gain matrix
-    if np.abs(x_nom[3,0]) > 0.01:  # if there is sufficient speed for controllability
-        K = dlqr_calculate(A, B, Q_lqr, R_lqr)
-    else:
-        K = np.array([ [0, 0, 1.0, 0], [0, 0, 0, 1.0] ])  # tuned from flight room tests
-
-    return [A, B, C, K]
+    return isInside
 
 
-# DLQR implementation from  https://github.com/python-control/python-control/issues/359#issuecomment-759423706
-def dlqr_calculate(G, H, Q, R):
+def calibrate_sample_safety_check_time(x_nom0, Xaug0, P0, env, params):
     """
-    Discrete-time Linear Quadratic Regulator calculation.
-    State-feedback control  u[k] = -K*x[k]
-
-    How to apply the function:    
-        K = dlqr_calculate(G,H,Q,R)
-        K, P, E = dlqr_calculate(G,H,Q,R, return_solution_eigs=True)
-
-    Inputs:
-      G, H, Q, R  -> all numpy arrays  (simple float number not allowed)
-      returnPE: define as True to return Ricatti solution and final eigenvalues
-
-    Returns:
-      K: state feedback gain
-      P: Ricatti equation solution
-      E: eigenvalues of (G-HK)  (closed loop z-domain poles)
+    TODO
+    calibration process to estimate the maximum time needed for sampling a trajectory parameter and checking its safety
     """
-    from scipy.linalg import solve_discrete_are, inv
-    P = solve_discrete_are(G, H, Q, R)  #Solução Ricatti
-    K = inv(H.T@P@H + R)@H.T@P@G    #K = (B^T P B + R)^-1 B^T P A 
 
-    return K
+    N = params['calibration_iterations']
+    iter_times = np.zeros(N)
+    calibration_params = params.copy()
+    calibration_params['collision_check_dist_threshold'] = 999
+    calibration_params['shouldCheckDist'] = True
+
+    for i in range(N):    
+
+        # Note start time for iteration
+        t_start = time.time()
+
+        # Sample new trajectory parameters within specified limits near network output. TODO: sample random parameters instead of the center ones
+        [kw, kv] = sample_near_trajectory_parameters(
+            (calibration_params['kw_lims'][0]+calibration_params['kw_lims'][1])/2, 
+            (calibration_params['kv_lims'][0]+calibration_params['kv_lims'][1])/2, 
+            calibration_params)
+
+        # Create nominal trajectory and check safety
+        check_trajectory_parameter_safety(kw, kv, x_nom0, Xaug0, P0, env, calibration_params)
+
+        # Note time taken for iteration
+        iter_times[i] = time.time() - t_start
+
+    # Save a conservative estimate for max time
+    mean_iter_time = np.mean(iter_times)
+    Delta_t = np.round(calibration_params['calibration_max_time_multiplier'] * mean_iter_time, 2)
+
+    return Delta_t
+
+
+def sample_near_trajectory_parameters(kw0, kv0, params):
+    """
+    TODO
+    Sample trajectory parameters near original parameters within specified limits
+    """
+    kw = np.inf
+    while kw < params['kw_lims'][0] or kw > params['kw_lims'][1]:
+        kw = np.random.normal( kw0, params['sample_std_dev'])
+    kv = np.inf
+    while kv < params['kv_lims'][0] or kv > params['kv_lims'][1]:
+        kv = np.random.normal( kv0, params['sample_std_dev'])
+
+    return kw, kv
+
+
+def update_nominal_trajectory(x_nom, u_nom, xnom_seg, unom_seg, segment_number, params):
+    """
+    TODO
+    """
+    # Append previous nominal trajectory (without fail-safe) with new segment trajectory (excluding first nominal position)
+    x_nom = np.append(x_nom[:,:int(params['t_seg']/params['dt'])*segment_number+1], xnom_seg[:,1:], axis=1)
+    u_nom = np.append(u_nom[:,:int(params['t_seg']/params['dt'])*segment_number], unom_seg, axis=1)
+
+    return x_nom, u_nom
+
+
+def sample_near_network_output(action_mean, action_cov, params):
+    """
+    TODO
+    """
+    kw0 = action_mean[0,0]; kv0 = action_mean[0,1]
+    kw_std = action_cov[0,0]; kv_std = action_cov[1,1]
+    kw = np.inf
+    while kw < params['kw_lims'][0] or kw > params['kw_lims'][1]:
+        kw = np.random.normal( kw0, kw_std)
+    kv = np.inf
+    while kv < params['kv_lims'][0] or kv > params['kv_lims'][1]:
+        kv = np.random.normal( kv0, kv_std)
+
+    return kw, kv

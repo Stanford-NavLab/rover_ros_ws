@@ -9,7 +9,7 @@ from geometry_msgs.msg import PoseStamped
 
 from planner.msg import State, Control, NominalTrajectory
 from planner.planner_utils import generate_robot_matrices
-from controller.controller_utils import wrap_angle
+from controller.controller_utils import wrap_angle, EKF_prediction_step, EKF_correction_step
 
 class EKF():
     """Extended Kalman Filter for state estimation
@@ -27,11 +27,9 @@ class EKF():
         self.rate = rospy.Rate(10)
 
         # class variables
-        self.x = 0
-        self.y = 0
-        self.theta = 0
-        self.v = 0
+        self.x_hat = None  # [x, y, theta, v]
         self.t_prev = 0
+        self.z = None
 
         # publishers and subscribers
         mocap_sub = rospy.Subscriber('vrpn_client_node/rover/pose', PoseStamped, self.mocap_callback)
@@ -41,7 +39,7 @@ class EKF():
     def mocap_callback(self, data):
         """Mocap subscriber callback
 
-        Receive and save mocap data.
+        Receive and save mocap data as measurement.
 
         """
         pos = data.pose.position
@@ -49,7 +47,7 @@ class EKF():
 
         quat = np.array([q.x, q.y, q.z, q.w])
         r = R.from_quat(quat)
-        self.theta = wrap_angle(r.as_euler('zyx')[0])
+        self.x_hat[2] = wrap_angle(r.as_euler('zyx')[0])
 
         dt = time.time() - self.t_prev
         self.v = np.sqrt((self.x - pos.x)**2 + (self.y - pos.y)**2) / dt
@@ -65,10 +63,10 @@ class EKF():
 
         """
         s = State()
-        s.x = self.x 
-        s.y = self.y 
-        s.theta = self.theta 
-        s.v = self.v 
+        s.x = self.x_hat[0]
+        s.y = self.x_hat[1]
+        s.theta = self.x_hat[2] 
+        s.v = self.x_hat[3]
         self.state_est_pub.publish(s)
 
 
@@ -94,6 +92,8 @@ class EKF():
         rospy.loginfo("Running EKF")
         while not rospy.is_shutdown():
             
+            self.predict()
+            self.update()
             self.publish_state_est()
 
             self.rate.sleep()

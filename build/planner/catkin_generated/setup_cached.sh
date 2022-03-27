@@ -9,6 +9,7 @@
 # modified environment variables
 export CMAKE_PREFIX_PATH="/home/navlab-nuc/rover_ros_ws/devel/.private/planner:$CMAKE_PREFIX_PATH"
 export LD_LIBRARY_PATH="/home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib:$LD_LIBRARY_PATH"
+export PKG_CONFIG_PATH="/home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/pkgconfig:$PKG_CONFIG_PATH"
 export PWD='/home/navlab-nuc/rover_ros_ws/build/planner'
 export PYTHONPATH="/home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/python3/dist-packages:$PYTHONPATH"
 export ROSLISP_PACKAGE_DIRECTORIES="/home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"

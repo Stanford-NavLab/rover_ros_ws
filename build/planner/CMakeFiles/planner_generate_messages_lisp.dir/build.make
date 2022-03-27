@@ -70,8 +70,8 @@ CMakeFiles/planner_generate_messages_lisp: /home/navlab-nuc/rover_ros_ws/devel/.
 
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/common-lisp/ros/planner/msg/NominalTrajectory.lisp: /opt/ros/noetic/lib/genlisp/gen_lisp.py
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/common-lisp/ros/planner/msg/NominalTrajectory.lisp: /home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg
-/home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/common-lisp/ros/planner/msg/NominalTrajectory.lisp: /home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/common-lisp/ros/planner/msg/NominalTrajectory.lisp: /home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg
+/home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/common-lisp/ros/planner/msg/NominalTrajectory.lisp: /home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/navlab-nuc/rover_ros_ws/build/planner/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating Lisp code from planner/NominalTrajectory.msg"
 	catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/genlisp/cmake/../../../lib/genlisp/gen_lisp.py /home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg -Iplanner:/home/navlab-nuc/rover_ros_ws/src/planner/msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p planner -o /home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/common-lisp/ros/planner/msg
 

@@ -1,0 +1,7 @@
+set(sensing_SETUP_PY_SETUP_MODULE "distutils.core")
+set(sensing_SETUP_PY_VERSION "0.0.0")
+set(sensing_SETUP_PY_SCRIPTS "")
+set(sensing_SETUP_PY_PACKAGES "sensing")
+set(sensing_SETUP_PY_PACKAGE_DIRS "src/sensing")
+set(sensing_SETUP_PY_MODULES "")
+set(sensing_SETUP_PY_MODULE_DIRS "")

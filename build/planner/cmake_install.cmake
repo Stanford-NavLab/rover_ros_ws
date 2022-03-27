@@ -195,6 +195,10 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/planner" TYPE PROGRAM FILES "/home/navlab-nuc/rover_ros_ws/build/planner/catkin_generated/installspace/simple_planner.py")
 endif()
 
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/planner" TYPE PROGRAM FILES "/home/navlab-nuc/rover_ros_ws/build/planner/catkin_generated/installspace/sequence_planner.py")
+endif()
+
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/navlab-nuc/rover_ros_ws/build/planner/gtest/cmake_install.cmake")

@@ -7,7 +7,7 @@ import numpy as np
 import sys
 
 from planner.msg import State, Control, NominalTrajectory
-from planner.planner_utils import *
+import planner.planner_utils as plan_util
 
 
 class simple_planner():
@@ -19,7 +19,7 @@ class simple_planner():
     def __init__(self, kw, kv):
         # parameters (eventually make global)
         self.max_acc_mag = 0.25
-        self.t_plan = 3.0
+        self.t_plan = 3.0  # trajectory time length
         self.dt = 0.2
 
         # initialize node 
@@ -30,44 +30,51 @@ class simple_planner():
         self.traj_pub = rospy.Publisher('planner/traj', NominalTrajectory, queue_size=10)
 
         # subscribers
-        state_est_sub = rospy.Subscriber('controller/state_est', State, self.state_est_callback)
+        mocap_sub = rospy.Subscriber('sensing/mocap', State, self.mocap_callback)
 
         # class variables
-        self.x_hat = np.zeros((4,1))
+        self.x_0 = np.zeros((4,1))
         self.traj_msg = None
         self.kw = kw
         self.kv = kv
 
     
-    def state_est_callback(self, data):
-        """State estimator subscriber callback
+    def mocap_callback(self, data):
+        """Mocap subscriber callback
 
-        Save received state estimate.
+        Save received initial state.
 
         """
-        self.x_hat = np.array([[data.x],[data.y],[data.theta],[data.v]])
+        self.x_0 = np.array([[data.x],[data.y],[data.theta],[data.v]])
 
 
     def generate_trajectory(self):
         """Generate trajectory msg from parameters
+
         """
         rospy.loginfo("Generating nominal trajectory with w = %f, v = %f", kw, kv)
 
-        x_nom, u_nom = trajectory_parameter_to_nominal_trajectory(
-            self.kw, self.kv, self.x_hat, self.t_plan, self.dt, self.max_acc_mag)
+        x_nom, u_nom = plan_util.trajectory_parameter_to_nominal_trajectory(
+            self.kw, self.kv, self.x_0, self.t_plan, self.dt, self.max_acc_mag)
 
-        rospy.loginfo("Final state: x = %f, y = %f, theta = %f", x_nom[0][-1], x_nom[1][-1], x_nom[2][-1])
+        rospy.loginfo("Desired final state: x = %f, y = %f, theta = %f", x_nom[0][-1], x_nom[1][-1], x_nom[2][-1])
 
         self.traj_msg = NominalTrajectory()
-        self.traj_msg.states = wrap_states(x_nom)
-        self.traj_msg.controls = wrap_controls(u_nom)
+        self.traj_msg.states = plan_util.wrap_states(x_nom)
+        self.traj_msg.controls = plan_util.wrap_controls(u_nom)
         
 
     def publish_trajectory(self):
+        """Publish trajcetory message
+
+        """
         self.traj_pub.publish(self.traj_msg)
 
 
     def run(self):
+        """Run node
+
+        """
         rospy.loginfo("Running Simple Planner")
 
         while not rospy.is_shutdown():
