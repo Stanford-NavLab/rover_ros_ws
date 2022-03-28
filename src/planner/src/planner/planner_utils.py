@@ -3,11 +3,10 @@
 import numpy as np
 import time
 
-from planner.reachability_utils import create_motion_sensing_pZ, compute_reachable_sets_position_sensing, is_collision_free
-
-from planner.msg import State, Control
+import planner.reachability_utils as reach_util
 from controller.controller_utils import wrap_angle
-
+import params.params as params
+from planner.msg import State, Control
 
 def wrap_states(x_nom):
     """Wraps a np array of nominal states into a vector of state msgs
@@ -134,29 +133,29 @@ def trajectory_parameter_to_nominal_trajectory(kw, kv, xnom0, t_plan, dt, max_ac
     return [xnom, unom]
 
 
-def check_trajectory_parameter_safety(kw, kv, x_nom0, Xaug0, P0, env, params):
+def check_trajectory_parameter_safety(kw, kv, x_nom0, Xaug0, P0, env):
     """Check if trajectory parameter is safe
 
     TODO
     
     """
-    #create nominal trajectory for given trajectory parameter
+    # Create nominal trajectory for given trajectory parameter
     [xnom_seg, unom_seg] = trajectory_parameter_to_nominal_trajectory(
-        kw, kv, x_nom0, params['t_seg'], params['dt'], params['max_acc_mag'])
+        kw, kv, x_nom0, params.T_SEG, params.DT, params.MAX_ACC_MAG)
 
-    #create motion and sensing pZs along nominal trajectory
-    [WpZ, VpZs, Rhats] = create_motion_sensing_pZ(
-        xnom_seg, params['Q'], params['R'], params['m'], 
+    # Create motion and sensing pZs along nominal trajectory
+    [WpZ, VpZs, Rhats] = reach_util.create_motion_sensing_pZ(
+        xnom_seg, params.Q_EKF, params.R_EKF, params.SIGMA_CONF_LVL, 
         env['bias_area_lims'], env['regular_bias'], 
         env['different_bias'])
 
-    #compute reachable sets for the trajectory with either range sensing or position sensing
-    [Xaug, Zaug, P_all] = compute_reachable_sets_position_sensing(
+    # Compute reachable sets for the trajectory with either range sensing or position sensing
+    [Xaug, Zaug, P_all] = reach_util.compute_reachable_sets_position_sensing(
         xnom_seg, unom_seg, Xaug0, P0, params['Q'], WpZ, VpZs, Rhats, 
         params['Q_lqr'], params['R_lqr'], params['m'], params['dt'])
 
-    #check if trajectory is safe
-    isSafe = is_collision_free(Zaug, env['obstZ'], 
+    # Check if trajectory is safe
+    isSafe = reach_util.is_collision_free(Zaug, env['obstZ'], 
         collisionCheckOrder=params['collision_check_zonotope_order'], 
         distCheck=params['shouldCheckDist'], 
         dist_threshold=params['collision_check_dist_threshold'])
@@ -180,7 +179,7 @@ def is_trajectory_inside_region(x_nom, region_array):
     return isInside
 
 
-def calibrate_sample_safety_check_time(x_nom0, Xaug0, P0, env, params):
+def calibrate_sample_safety_check_time(x_nom0, Xaug0, P0, env):
     """
     TODO
     calibration process to estimate the maximum time needed for sampling a trajectory parameter and checking its safety
@@ -198,10 +197,9 @@ def calibrate_sample_safety_check_time(x_nom0, Xaug0, P0, env, params):
         t_start = time.time()
 
         # Sample new trajectory parameters within specified limits near network output. TODO: sample random parameters instead of the center ones
-        [kw, kv] = sample_near_trajectory_parameters(
-            (calibration_params['kw_lims'][0]+calibration_params['kw_lims'][1])/2, 
-            (calibration_params['kv_lims'][0]+calibration_params['kv_lims'][1])/2, 
-            calibration_params)
+        kw, kv = sample_near_trajectory_parameters(
+            (params.KW_LIMS[0]+params.KW_LIMS[1])/2, 
+            (params.KV_LIMS[0]+params.KV_LIMS[1])/2)
 
         # Create nominal trajectory and check safety
         check_trajectory_parameter_safety(kw, kv, x_nom0, Xaug0, P0, env, calibration_params)
@@ -216,43 +214,43 @@ def calibrate_sample_safety_check_time(x_nom0, Xaug0, P0, env, params):
     return Delta_t
 
 
-def sample_near_trajectory_parameters(kw0, kv0, params):
+def sample_near_trajectory_parameters(kw0, kv0):
     """
     TODO
     Sample trajectory parameters near original parameters within specified limits
     """
     kw = np.inf
-    while kw < params['kw_lims'][0] or kw > params['kw_lims'][1]:
-        kw = np.random.normal( kw0, params['sample_std_dev'])
+    while kw < params.KW_LIMS[0] or kw > params.KW_LIMS[1]:
+        kw = np.random.normal( kw0, params.SAMPLE_STD_DEV)
     kv = np.inf
-    while kv < params['kv_lims'][0] or kv > params['kv_lims'][1]:
-        kv = np.random.normal( kv0, params['sample_std_dev'])
+    while kv < params.KV_LIMS[0] or kv > params.KV_LIMS[1]:
+        kv = np.random.normal( kv0, params.SAMPLE_STD_DEV)
 
     return kw, kv
 
 
-def update_nominal_trajectory(x_nom, u_nom, xnom_seg, unom_seg, segment_number, params):
+def update_nominal_trajectory(x_nom, u_nom, xnom_seg, unom_seg, segment_number):
     """
     TODO
     """
     # Append previous nominal trajectory (without fail-safe) with new segment trajectory (excluding first nominal position)
-    x_nom = np.append(x_nom[:,:int(params['t_seg']/params['dt'])*segment_number+1], xnom_seg[:,1:], axis=1)
-    u_nom = np.append(u_nom[:,:int(params['t_seg']/params['dt'])*segment_number], unom_seg, axis=1)
+    x_nom = np.append(x_nom[:,:params.SEG_LEN*segment_number+1], xnom_seg[:,1:], axis=1)
+    u_nom = np.append(u_nom[:,:params.SEG_LEN*segment_number], unom_seg, axis=1)
 
     return x_nom, u_nom
 
 
-def sample_near_network_output(action_mean, action_cov, params):
+def sample_near_network_output(action_mean, action_cov):
     """
     TODO
     """
     kw0 = action_mean[0,0]; kv0 = action_mean[0,1]
     kw_std = action_cov[0,0]; kv_std = action_cov[1,1]
     kw = np.inf
-    while kw < params['kw_lims'][0] or kw > params['kw_lims'][1]:
-        kw = np.random.normal( kw0, kw_std)
+    while kw < params.KW_LIMS[0] or kw > params.KW_LIMS[1]:
+        kw = np.random.normal(kw0, kw_std)
     kv = np.inf
-    while kv < params['kv_lims'][0] or kv > params['kv_lims'][1]:
-        kv = np.random.normal( kv0, kv_std)
+    while kv < params.KV_LIMS[0] or kv > params.KV_LIMS[1]:
+        kv = np.random.normal(kv0, kv_std)
 
     return kw, kv

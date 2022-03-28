@@ -8,6 +8,7 @@ import sys
 
 from planner.msg import State, Control, NominalTrajectory
 import planner.planner_utils as plan_util
+import params.params as params
 
 
 class sequence_planner():
@@ -67,7 +68,7 @@ class sequence_planner():
         rospy.loginfo("Generating nominal trajectory with w = %f, v = %f", kw, kv)
 
         x_nom, u_nom = plan_util.trajectory_parameter_to_nominal_trajectory(
-            kw, kv, self.x_0, self.t_plan, self.dt, self.max_acc_mag)
+            kw, kv, self.x_0, params.T_PLAN, params.DT, params.MAX_ACC_MAG)
 
         rospy.loginfo("Final state: x = %f, y = %f, theta = %f", x_nom[0][-1], x_nom[1][-1], x_nom[2][-1])
 

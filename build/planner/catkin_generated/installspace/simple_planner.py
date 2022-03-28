@@ -8,22 +8,18 @@ import sys
 
 from planner.msg import State, Control, NominalTrajectory
 import planner.planner_utils as plan_util
+import params.params as params
 
 
 class simple_planner():
     """Simple Planner
 
-    Node which publishes a nominal trajectory parameterized by desired linear and angular speed.
+    Node which publishes a single nominal trajectory parameterized by desired linear and angular speed.
 
     """
     def __init__(self, kw, kv):
-        # parameters (eventually make global)
-        self.max_acc_mag = 0.25
-        self.t_plan = 3.0  # trajectory time length
-        self.dt = 0.2
-
         # initialize node 
-        rospy.init_node('simple_planner', anonymous=True)
+        rospy.init_node('simple_planner', anonymous=True, disable_signals=True)
         self.rate = rospy.Rate(10)
 
         # publishers
@@ -55,7 +51,7 @@ class simple_planner():
         rospy.loginfo("Generating nominal trajectory with w = %f, v = %f", kw, kv)
 
         x_nom, u_nom = plan_util.trajectory_parameter_to_nominal_trajectory(
-            self.kw, self.kv, self.x_0, self.t_plan, self.dt, self.max_acc_mag)
+            self.kw, self.kv, self.x_0, params.T_SEG, params.DT, params.MAX_ACC_MAG)
 
         rospy.loginfo("Desired final state: x = %f, y = %f, theta = %f", x_nom[0][-1], x_nom[1][-1], x_nom[2][-1])
 
@@ -65,7 +61,7 @@ class simple_planner():
         
 
     def publish_trajectory(self):
-        """Publish trajcetory message
+        """Publish trajectory message
 
         """
         self.traj_pub.publish(self.traj_msg)
@@ -85,7 +81,7 @@ class simple_planner():
                 self.generate_trajectory()
                 self.publish_trajectory()
                 rospy.loginfo("Published trajectory")
-                break
+                rospy.signal_shutdown("Exiting...")
             self.rate.sleep()
             
         # spin() simply keeps python from exiting until this node is stopped

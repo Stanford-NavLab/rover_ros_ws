@@ -10,6 +10,7 @@ from geometry_msgs.msg import Twist, PoseStamped
 from planner.msg import State, Control, NominalTrajectory
 from controller.controller_utils import compute_control, v_to_PWM, omega_to_PWM, EKF_prediction_step, EKF_correction_step
 from planner.planner_utils import generate_robot_matrices
+import params.params as params
 
 class traj_tracker():
     """Trajectory tracker
@@ -20,12 +21,12 @@ class traj_tracker():
 
     """
     def __init__(self):
-        # Parameters (eventually make these global)
-        self.dt = 0.2
-        self.Q_lqr = np.diag([5, 5, 10, 100])
-        self.R_lqr = np.diag([100, 100])
-        self.Q_ekf = np.diag([0.0001, 0.0001, 0.0005, 0.0001])
-        self.R_ekf = np.diag([0.1, 0.1, 0.001])
+        # # Parameters (eventually make these global)
+        # self.dt = params.DT
+        # self.Q_lqr = params.Q_LQR
+        # self.R_lqr = np.diag([100, 100])
+        # self.Q_ekf = np.diag([0.0001, 0.0001, 0.0005, 0.0001])
+        # self.R_ekf = np.diag([0.1, 0.1, 0.001])
 
         # Initialize node 
         rospy.init_node('traj_tracker', anonymous=True)
@@ -88,12 +89,12 @@ class traj_tracker():
         u_nom_msg = self.U_nom[self.idx]
         u_nom = np.array([[u_nom_msg.omega],[u_nom_msg.a]])
 
-        A,B,C,K = generate_robot_matrices(x_nom, u_nom, self.Q_lqr, self.R_lqr, self.dt)
+        A,B,C,K = generate_robot_matrices(x_nom, u_nom, params.Q_LQR, params.R_LQR, params.DT)
         # K = np.array([[0, 0, 1, 0],
         #               [0, 0, 0, 1]])
 
         # ======== EKF Update ========
-        self.x_hat = EKF_correction_step(self.x_hat, self.P, self.z, C, self.R_ekf)
+        self.x_hat = EKF_correction_step(self.x_hat, self.P, self.z, C, params.R_EKF)
 
         # ======== Apply feedback control law ========
         u = compute_control(x_nom, u_nom, self.x_hat, K)
@@ -102,7 +103,7 @@ class traj_tracker():
         motor_cmd = Twist()
         
         # Closed-loop
-        self.v_des += self.dt * u[1][0]  # integrate acceleration
+        self.v_des += params.DT * u[1][0]  # integrate acceleration
         motor_cmd.linear.x = v_to_PWM(self.v_des)
         motor_cmd.angular.z = omega_to_PWM(u[0][0])
 
@@ -132,7 +133,7 @@ class traj_tracker():
                 self.stop_motors()
 
         # ======== EKF Predict ========
-        self.x_hat = EKF_prediction_step(self.x_hat, u, self.P, A, self.Q_ekf, self.dt)
+        self.x_hat = EKF_prediction_step(self.x_hat, u, self.P, A, params.Q_EKF, params.DT)
             
 
     

@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 from torch.distributions import Normal
 
+import params.params as params
+
 class ActorCritic(nn.Module):
     """
     TODO
@@ -46,7 +48,7 @@ class ActorCritic(nn.Module):
         return dist, value
 
 
-def load_model( model_FileStr ):
+def load_model(model_FileStr):
     """
     TODO
     Load trained network
@@ -60,7 +62,7 @@ def load_model( model_FileStr ):
     device   = torch.device("cuda" if use_cuda else "cpu")
 
     #load saved model and hyperparameters
-    checkpoint = torch.load(model_FileStr)
+    checkpoint = torch.load(model_FileStr, map_location=device)
 
     #load the learning params
     learning_params = checkpoint['learning_params']
@@ -72,7 +74,7 @@ def load_model( model_FileStr ):
 
     return model
 
-def evaluate_model( model, x_nom, params ):
+def evaluate_model(model, x_nom):
     """
     TODO
     Get model output distribution mean and covariance
@@ -83,34 +85,34 @@ def evaluate_model( model, x_nom, params ):
     device   = torch.device("cuda" if use_cuda else "cpu")
 
     #get input state for model
-    state = torch.FloatTensor(np.concatenate((x_nom[:,[-1]],params['obst_array']),axis=0).T).to(device)
+    state = torch.FloatTensor(np.concatenate((x_nom[:,[-1]],params.OBST_ARR),axis=0).T).to(device)
 
     #get model output distribution
     dist, _ = model(state)
 
     #get mean of output distribution
-    action_mean = map_control_inputs(dist.loc.cpu().detach().numpy(), params)
+    action_mean = map_control_inputs(dist.loc.cpu().detach().numpy())
 
     #get covariance of output distribution
-    if params['sampleMethod'] == 1: action_cov = np.diag(dist.scale.cpu().detach().numpy()[0])
-    elif params['sampleMethod'] == 2: action_cov = params['sample_std_dev']*np.identity(action_mean.shape[1])
+    if params.SAMPLE_METHOD == 1: action_cov = np.diag(dist.scale.cpu().detach().numpy()[0])
+    elif params.SAMPLE_METHOD == 2: action_cov = params.SAMPLE_STD_DEV*np.identity(action_mean.shape[1])
 
     return [action_mean, action_cov]
 
 
-def map_control_inputs(action_array, params):
+def map_control_inputs(action_array):
     """
     TODO
     """
     for i in range(action_array.shape[0]):
 
         kw = action_array[i,0]; kv = action_array[i,1]
-        kw_scaled = ((kw + 1.0)/2.0); kv_scaled = ((kv + 1.0)/2.0); #between 0 and 1
-        kw_mapped = kw_scaled*(params['kw_lims'][1] - params['kw_lims'][0]) + params['kw_lims'][0]; #mapped to output range
-        kv_mapped = kv_scaled*(params['kv_lims'][1] - params['kv_lims'][0]) + params['kv_lims'][0]; #mapped to output range
+        kw_scaled = ((kw + 1.0)/2.0); kv_scaled = ((kv + 1.0)/2.0);  # between 0 and 1
+        kw_mapped = kw_scaled*(params.KW_LIMS[1] - params.KW_LIMS[0]) + params.KW_LIMS[0]; #mapped to output range
+        kv_mapped = kv_scaled*(params.KV_LIMS[1] - params.KV_LIMS[0]) + params.KV_LIMS[0]; #mapped to output range
 
         #get output array
-        action_array[i,0] = np.clip(kw_mapped, params['kw_lims'][0], params['kw_lims'][1])
-        action_array[i,1] = np.clip(kv_mapped, params['kv_lims'][0], params['kv_lims'][1])
+        action_array[i,0] = np.clip(kw_mapped, params.KW_LIMS[0], params.KW_LIMS[1])
+        action_array[i,1] = np.clip(kv_mapped, params.KV_LIMS[0], params.KV_LIMS[1])
 
     return action_array

@@ -1,0 +1,54 @@
+[ 80%] Built target apriltag
+[ 85%] Built target opencv_demo
+[ 90%] Built target apriltag_demo
+[100%] Built target apriltag_python
+[36mInstall the project...[0m
+-- Install configuration: "Release"
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/apriltag.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/apriltag_math.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/apriltag_pose.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/doubles.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/doubles_floats_impl.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/floats.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/g2d.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/getopt.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/homography.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/image_types.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/image_u8.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/image_u8x3.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/image_u8x4.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/matd.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/math_util.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/pam.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/pjpeg.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/pnm.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/postscript_utils.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/string_util.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/svd22.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/time_util.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/timeprofile.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/unionfind.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/workerpool.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/zarray.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/zhash.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/common/zmaxheap.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tag16h5.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tag25h9.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tag36h10.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tag36h11.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tagCircle21h7.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tagCircle49h12.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tagCustom48h12.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tagStandard41h12.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/include/apriltag/tagStandard52h13.h
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/lib/libapriltag.so.3.2.0
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/lib/libapriltag.so.3
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/lib/libapriltag.so
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/share/apriltag/cmake/apriltagTargets.cmake
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/share/apriltag/cmake/apriltagTargets-release.cmake
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/share/apriltag/cmake/apriltagConfig.cmake
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/share/apriltag/cmake/apriltagConfigVersion.cmake
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/lib/pkgconfig/apriltag.pc
+-- Up-to-date: /home/navlab-nuc/.local/lib/python3.8/site-packages/apriltag.cpython-38-x86_64-linux-gnu.so
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/bin/opencv_demo
+-- Up-to-date: /home/navlab-nuc/rover_ros_ws/devel/bin/apriltag_demo

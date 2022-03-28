@@ -1,0 +1,3 @@
+[ 42%] Built target cv_camera
+[ 71%] Built target cv_camera_nodelet
+[100%] Built target cv_camera_node

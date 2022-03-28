@@ -12,6 +12,7 @@ from planner.msg import State, Control, NominalTrajectory
 from controller.controller_utils import compute_control, v_to_PWM, omega_to_PWM, EKF_prediction_step, EKF_correction_step
 from planner.planner_utils import wrap_states
 from planner.reachability_utils import generate_robot_matrices
+import params.params as params
 
 class traj_tracker():
     """Trajectory tracker
@@ -23,21 +24,12 @@ class traj_tracker():
 
     """
     def __init__(self):
-        # Parameters (eventually make these global)
-        self.dt = 0.2
-        self.t_plan = 3.0  # trajectory time length (excluding braking maneuver)
-        self.Q_lqr = np.diag([5, 5, 10, 100])
-        self.R_lqr = np.diag([100, 100])
-        self.Q_ekf = np.diag([0.0001, 0.0001, 0.0005, 0.0001])
-        self.R_ekf = np.diag([0.1, 0.1, 0.001, 0.01])
-
         # Initialize node 
         rospy.init_node('traj_tracker', anonymous=True)
-        self.rate = rospy.Rate(1/self.dt)
+        self.rate = rospy.Rate(1/params.DT)
 
         # Class variables
         self.idx = 0  # current index in the trajectory
-        self.N_traj = int(self.t_plan / self.dt)  # Length of trajectory
         self.X_nom_curr = None
         self.U_nom_curr = None
         self.X_nom_next = None
@@ -106,12 +98,12 @@ class traj_tracker():
         if self.idx == 0:
             self.x_hat = x_nom
 
-        A,B,C,K = generate_robot_matrices(x_nom, u_nom, self.Q_lqr, self.R_lqr, self.dt)
+        A,B,C,K = generate_robot_matrices(x_nom, u_nom, params.Q_LQR, params.R_LQR, params.DT)
         # K = np.array([[0, 0, 1, 0],
         #               [0, 0, 0, 1]])
 
         # ======== EKF Update ========
-        self.x_hat, self.P = EKF_correction_step(self.x_hat, self.P, self.z, C, self.R_ekf)
+        self.x_hat, self.P = EKF_correction_step(self.x_hat, self.P, self.z, C, params.R_EKF)
         self.state_est_pub.publish(wrap_states(self.x_hat)[0])
 
         # ======== Apply feedback control law ========
@@ -121,7 +113,7 @@ class traj_tracker():
         motor_cmd = Twist()
         
         # Closed-loop
-        self.v_des += self.dt * u[1][0]  # integrate acceleration
+        self.v_des += params.DT* u[1][0]  # integrate acceleration
         motor_cmd.linear.x = v_to_PWM(self.v_des)
         motor_cmd.angular.z = omega_to_PWM(u[0][0])
 
@@ -133,7 +125,7 @@ class traj_tracker():
         self.idx += 1
 
         # ======== Check for end of trajectory ========
-        if self.idx >= self.N_traj:
+        if self.idx >= params.SEG_LEN:
             # Finished tracking current trajectory 
             rospy.loginfo("Finished tracking trajectory")
 
@@ -161,7 +153,7 @@ class traj_tracker():
                 self.stop_motors()
 
         # ======== EKF Predict ========
-        self.x_hat, self.P = EKF_prediction_step(self.x_hat, u, self.P, A, self.Q_ekf, self.dt)
+        self.x_hat, self.P = EKF_prediction_step(self.x_hat, u, self.P, A, params.Q_EKF, params.DT)
 
         # ======== Debugging ========
         x_err = self.z[0] - x_nom[0]

@@ -164,6 +164,8 @@ include_directories(
 catkin_install_python(PROGRAMS
   nodes/simple_planner.py
   nodes/sequence_planner.py
+  nodes/nn_planner.py
+  nodes/reachability_planner.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

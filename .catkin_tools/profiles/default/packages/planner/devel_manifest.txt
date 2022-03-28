@@ -9,6 +9,7 @@ planner
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/python3/dist-packages/planner/msg/_NominalTrajectory.py /home/navlab-nuc/rover_ros_ws/devel/lib/python3/dist-packages/planner/msg/_NominalTrajectory.py
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/python3/dist-packages/planner/msg/_Control.py /home/navlab-nuc/rover_ros_ws/devel/lib/python3/dist-packages/planner/msg/_Control.py
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/planner/simple_planner.py /home/navlab-nuc/rover_ros_ws/devel/lib/planner/simple_planner.py
+/home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/planner/nn_planner.py /home/navlab-nuc/rover_ros_ws/devel/lib/planner/nn_planner.py
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/planner/cmake.lock /home/navlab-nuc/rover_ros_ws/devel/lib/planner/cmake.lock
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/planner/sequence_planner.py /home/navlab-nuc/rover_ros_ws/devel/lib/planner/sequence_planner.py
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/pkgconfig/planner.pc /home/navlab-nuc/rover_ros_ws/devel/lib/pkgconfig/planner.pc
