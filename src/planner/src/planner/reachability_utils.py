@@ -390,9 +390,8 @@ def generate_robot_matrices(x_nom, u_nom, Q_lqr, R_lqr, dt):
     B[2,0] = dt; B[3,1] = dt
 
     # Form measurement matrix
-    # C = np.zeros((measurement_dim, state_dim))
-    # C[0,0] = 1; C[1,1] = 1; C[2,2] = 1
-    C = np.eye(4)
+    C = np.zeros((measurement_dim, state_dim))
+    C[0,0] = 1; C[1,1] = 1; C[2,2] = 1
 
     # Compute control feedback gain matrix
     if np.abs(x_nom[3,0]) > 0.01:  # if there is sufficient speed for controllability

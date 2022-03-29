@@ -36,9 +36,9 @@ class traj_tracker():
         self.U_nom_next = None
 
         self.x_hat = np.zeros((4,1))
-        self.P = np.diag([0.01, 0.01, 0.001, 0.0])
+        self.P = params.P_0
 
-        self.z = None
+        self.z = np.zeros((3,1))
         self.v_des = 0
         self.t_start = 0
 
@@ -78,8 +78,8 @@ class traj_tracker():
         Save received measurement.
 
         """
-        # For full state measurement (i.e. mocap)
-        self.z = np.array([[data.x],[data.y],[data.theta],[data.v]])
+        # For mocap measurement
+        self.z = np.array([[data.x],[data.y],[data.theta]])
 
 
     def track(self):
@@ -107,17 +107,17 @@ class traj_tracker():
         self.state_est_pub.publish(wrap_states(self.x_hat)[0])
 
         # ======== Apply feedback control law ========
-        u = compute_control(x_nom, u_nom, self.z, K)
+        u = compute_control(x_nom, u_nom, self.x_hat, K)
 
         # Create motor command msg
         motor_cmd = Twist()
         
         # Closed-loop
-        self.v_des += params.DT* u[1][0]  # integrate acceleration
+        self.v_des += params.DT * u[1][0]  # integrate acceleration
         motor_cmd.linear.x = v_to_PWM(self.v_des)
         motor_cmd.angular.z = omega_to_PWM(u[0][0])
 
-        print(" - u_a: ", round(u[1][0],2), " u_w: ", round(u[0][0],2))
+        print(" - v_des: ", round(self.v_des,2), " u_a: ", round(u[1][0],2), " u_w: ", round(u[0][0],2))
         print(" - lin PWM: ", round(motor_cmd.linear.x,2), ", ang PWM: ", round(motor_cmd.angular.z,2))
 
         self.cmd_pub.publish(motor_cmd)
@@ -141,6 +141,7 @@ class traj_tracker():
 
         # ======== Check for end of braking maneuver ========
         if self.idx >= len(self.U_nom_curr):
+            rospy.loginfo("Braking maneuver completed")
             # Reset class variables
             self.X_nom_curr = None
             self.U_nom_curr = None

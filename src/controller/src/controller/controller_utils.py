@@ -29,10 +29,14 @@ def compute_control(x_nom, u_nom, x_hat, K):
     err[2] = wrap_angle(err[2])
     
     # print(" K: ", np.round(K,2))
+    # print(" x_hat: ", x_hat)
+    # print(" x_nom: ", x_nom)
     # print(" ----------------")
     # print(" x error: ", err[0])
     # print(" y error: ", err[1])
     # print(" theta error: ", err[2])
+    # print(" v hat: ", x_hat[3])
+    # print(" v nom: ", x_nom[3])
     # print(" v error: ", err[3])
     # print(" ----------------")
     # print(" u_a x contribution: ", K[1][0]*err[0])
@@ -45,6 +49,7 @@ def compute_control(x_nom, u_nom, x_hat, K):
     # print(" u_w theta contribution: ", K[0][2]*err[2])
     # print(" u_w v contribution: ", K[0][3]*err[3])
     # print(" ----------------")
+    # print(" K @ err: ", K @ err)
 
     # Compute total control input
     u = u_nom - K @ err
@@ -76,7 +81,7 @@ def omega_to_PWM(omega):
         omega = np.clip(omega, 0.0, 4.1997)
 
         # use a polynomial fit to data
-        p = [-0.0180, -0.0751, 0.2235, 0.0708]
+        p = [0.0180, -0.0751, 0.2235, 0.0708]
         pwm = np.polyval(p, omega)
 
         # clip to between 0 and 1
@@ -87,7 +92,7 @@ def omega_to_PWM(omega):
         omega = -omega
         omega = np.clip(omega, 0.0, 4.1997)
 
-        p = [-0.0180, -0.0751, 0.2235, 0.0708]
+        p = [0.0180, -0.0751, 0.2235, 0.0708]
         pwm = np.polyval(p, omega)
 
         return np.clip(-pwm, -1.0, 0.0)
@@ -113,7 +118,7 @@ def v_to_PWM(v):
     v = np.clip(v, 0.0, 1.25)
 
     # use a polynomial fit to data
-    p = [0.9023, -1.5793, 1.1612, -0.0717, 0.1635]
+    p = [1.2377, -1.9013, 1.2622, -0.0227]
     pwm = np.polyval(p, v)
 
     # clip to between 0 and 1
@@ -165,7 +170,7 @@ def EKF_correction_step(x_pred, P_pred, z, C, R):
         predicted state estimation covariance matrix
     z : np.array (4x1)
         received measurement 
-    C : np.array (4x4)
+    C : np.array (3x4)
         measurement matrix
     R : np.array (3x3)
         sensing model covariance
@@ -181,6 +186,10 @@ def EKF_correction_step(x_pred, P_pred, z, C, R):
     """
     #compute Kalman gain
     L = P_pred @ C.T @ np.linalg.inv(C @ P_pred @ C.T + R)
+    # print(" L: ", L)
+    # print(" z: ", z)
+    # print(" C @ x_pred: ", C @ x_pred)
+    # print(" correction term: ", L @ (z - C @ x_pred))
     #compute corrected state estimate
     x_hat = x_pred + L @ (z - C @ x_pred)
     #compute corrected state estimation covariance matrix
