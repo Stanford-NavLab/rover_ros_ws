@@ -10,7 +10,7 @@ Linked: (/home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/planner/simple
 Linked: (/home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/planner/nn_planner.py, /home/navlab-nuc/rover_ros_ws/devel/lib/planner/nn_planner.py)
 Linked: (/home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/planner/cmake.lock, /home/navlab-nuc/rover_ros_ws/devel/lib/planner/cmake.lock)
 Linked: (/home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/planner/sequence_planner.py, /home/navlab-nuc/rover_ros_ws/devel/lib/planner/sequence_planner.py)
-Symlinking /home/navlab-nuc/rover_ros_ws/devel/lib/planner/reachability_planner.py
+Linked: (/home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/planner/reachability_planner.py, /home/navlab-nuc/rover_ros_ws/devel/lib/planner/reachability_planner.py)
 Linked: (/home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/pkgconfig/planner.pc, /home/navlab-nuc/rover_ros_ws/devel/lib/pkgconfig/planner.pc)
 Linked: (/home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/roseus/ros/planner/manifest.l, /home/navlab-nuc/rover_ros_ws/devel/share/roseus/ros/planner/manifest.l)
 Linked: (/home/navlab-nuc/rover_ros_ws/devel/.private/planner/share/roseus/ros/planner/msg/State.l, /home/navlab-nuc/rover_ros_ws/devel/share/roseus/ros/planner/msg/State.l)

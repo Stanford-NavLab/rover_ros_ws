@@ -143,22 +143,31 @@ def check_trajectory_parameter_safety(kw, kv, x_nom0, Xaug0, P0, env):
     [xnom_seg, unom_seg] = trajectory_parameter_to_nominal_trajectory(
         kw, kv, x_nom0, params.T_SEG, params.DT, params.MAX_ACC_MAG)
 
+    print("xnom: ", xnom_seg)
+    print("unom: ", unom_seg)
+
     # Create motion and sensing pZs along nominal trajectory
     [WpZ, VpZs, Rhats] = reach_util.create_motion_sensing_pZ(
         xnom_seg, params.Q_EKF, params.R_EKF, params.SIGMA_CONF_LVL, 
         env['bias_area_lims'], env['regular_bias'], 
         env['different_bias'])
 
+    print("WpZ: ", WpZ)
+    print("VpZ: ", WpZ)
+
     # Compute reachable sets for the trajectory with either range sensing or position sensing
     [Xaug, Zaug, P_all] = reach_util.compute_reachable_sets_position_sensing(
-        xnom_seg, unom_seg, Xaug0, P0, params['Q'], WpZ, VpZs, Rhats, 
-        params['Q_lqr'], params['R_lqr'], params['m'], params['dt'])
+        xnom_seg, unom_seg, Xaug0, P0, params.Q_EKF, WpZ, VpZs, Rhats, 
+        params.Q_LQR, params.R_LQR, params.SIGMA_CONF_LVL, params.DT)
+
+    print("Xaug: ", Xaug)
+    print("Zaug: ", Zaug)
 
     # Check if trajectory is safe
     isSafe = reach_util.is_collision_free(Zaug, env['obstZ'], 
-        collisionCheckOrder=params['collision_check_zonotope_order'], 
-        distCheck=params['shouldCheckDist'], 
-        dist_threshold=params['collision_check_dist_threshold'])
+        collisionCheckOrder=params.COLLISION_CHECK_ZONOTOPE_ORDER, 
+        distCheck=params.CHECK_DIST_REQ, 
+        dist_threshold=params.COLLISION_CHECK_DIST_THRESH)
 
     return isSafe, Xaug, Zaug, P_all, xnom_seg, unom_seg
 
@@ -185,11 +194,11 @@ def calibrate_sample_safety_check_time(x_nom0, Xaug0, P0, env):
     calibration process to estimate the maximum time needed for sampling a trajectory parameter and checking its safety
     """
 
-    N = params['calibration_iterations']
+    N = params.CALIBRATION_ITERATIONS
     iter_times = np.zeros(N)
-    calibration_params = params.copy()
-    calibration_params['collision_check_dist_threshold'] = 999
-    calibration_params['shouldCheckDist'] = True
+    # calibration_params = params.copy()
+    # calibration_params['collision_check_dist_threshold'] = 999
+    # calibration_params['shouldCheckDist'] = True
 
     for i in range(N):    
 
@@ -202,14 +211,14 @@ def calibrate_sample_safety_check_time(x_nom0, Xaug0, P0, env):
             (params.KV_LIMS[0]+params.KV_LIMS[1])/2)
 
         # Create nominal trajectory and check safety
-        check_trajectory_parameter_safety(kw, kv, x_nom0, Xaug0, P0, env, calibration_params)
+        check_trajectory_parameter_safety(kw, kv, x_nom0, Xaug0, P0, env)
 
         # Note time taken for iteration
         iter_times[i] = time.time() - t_start
 
     # Save a conservative estimate for max time
     mean_iter_time = np.mean(iter_times)
-    Delta_t = np.round(calibration_params['calibration_max_time_multiplier'] * mean_iter_time, 2)
+    Delta_t = np.round(params.CALIBRATION_MAX_TIME_MULTIPLIER * mean_iter_time, 2)
 
     return Delta_t
 

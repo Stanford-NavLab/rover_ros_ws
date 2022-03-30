@@ -125,7 +125,7 @@ class traj_tracker():
         self.idx += 1
 
         # ======== Check for end of trajectory ========
-        if self.idx == params.SEG_LEN:
+        if self.idx >= params.SEG_LEN:
             # Finished tracking current trajectory 
             rospy.loginfo("Finished tracking trajectory")
 

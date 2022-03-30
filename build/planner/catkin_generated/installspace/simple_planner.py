@@ -81,7 +81,8 @@ class simple_planner():
                 self.generate_trajectory()
                 self.publish_trajectory()
                 rospy.loginfo("Published trajectory")
-                rospy.signal_shutdown("Exiting...")
+                rospy.loginfo("Exiting...")
+                rospy.signal_shutdown("")
             self.rate.sleep()
             
         # spin() simply keeps python from exiting until this node is stopped

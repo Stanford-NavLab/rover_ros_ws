@@ -29,11 +29,11 @@ class sequence_planner():
         # parameters (eventually make global)
         self.max_acc_mag = 0.25
         self.t_plan = 3.0  # time duration of each trajectory
-        self.t_next = 1.5  # time between sending trajectories
+        self.t_next = 3.0  # time between sending trajectories
         self.dt = 0.2
 
         # initialize node 
-        rospy.init_node('sequence_planner', anonymous=True)
+        rospy.init_node('sequence_planner', anonymous=True, disable_signals=True)
         self.rate = rospy.Rate(10)
 
         # publishers
@@ -47,8 +47,8 @@ class sequence_planner():
         self.traj_msg = None
 
         # trajectory sequence
-        self.k_seq = np.array([[0.0, 0.0, 0.0],
-                               [0.0, 0.0, 0.0]])
+        self.k_seq = np.array([[0.0, 0.2, -0.2, 0.3, -0.3],
+                               [0.5, 0.5, 0.5, 0.6, 0.6]])
         self.n_traj = self.k_seq.shape[1]
 
     
@@ -68,7 +68,7 @@ class sequence_planner():
         rospy.loginfo("Generating nominal trajectory with w = %f, v = %f", kw, kv)
 
         x_nom, u_nom = plan_util.trajectory_parameter_to_nominal_trajectory(
-            kw, kv, self.x_0, params.T_PLAN, params.DT, params.MAX_ACC_MAG)
+            kw, kv, self.x_0, params.T_SEG, params.DT, params.MAX_ACC_MAG)
 
         rospy.loginfo("Final state: x = %f, y = %f, theta = %f", x_nom[0][-1], x_nom[1][-1], x_nom[2][-1])
 
@@ -98,9 +98,10 @@ class sequence_planner():
                 for i in range(self.n_traj):
                     self.generate_trajectory(self.k_seq[0][i], self.k_seq[1][i])
                     self.publish_trajectory()
-                    rospy.loginfo("Published trajectory")
+                    rospy.loginfo("Published trajectory segment")
                     rospy.sleep(self.t_next)
-                break
+                rospy.loginfo("Exiting...")
+                rospy.signal_shutdown("")
             self.rate.sleep()
             
         # spin() simply keeps python from exiting until this node is stopped

@@ -29,7 +29,7 @@ add_custom_target(_planner_generate_messages_check_deps_${_filename}
 
 get_filename_component(_filename "/home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg" NAME_WE)
 add_custom_target(_planner_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "planner" "/home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg" "planner/State:planner/Control"
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "planner" "/home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg" "planner/Control:planner/State"
 )
 
 #
@@ -53,7 +53,7 @@ _generate_msg_cpp(planner
 _generate_msg_cpp(planner
   "/home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg"
   "${MSG_I_FLAGS}"
-  "/home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg;/home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg"
+  "/home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg;/home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg"
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/planner
 )
 
@@ -102,7 +102,7 @@ _generate_msg_eus(planner
 _generate_msg_eus(planner
   "/home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg"
   "${MSG_I_FLAGS}"
-  "/home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg;/home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg"
+  "/home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg;/home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg"
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/planner
 )
 
@@ -151,7 +151,7 @@ _generate_msg_lisp(planner
 _generate_msg_lisp(planner
   "/home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg"
   "${MSG_I_FLAGS}"
-  "/home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg;/home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg"
+  "/home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg;/home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg"
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/planner
 )
 
@@ -200,7 +200,7 @@ _generate_msg_nodejs(planner
 _generate_msg_nodejs(planner
   "/home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg"
   "${MSG_I_FLAGS}"
-  "/home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg;/home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg"
+  "/home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg;/home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg"
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/planner
 )
 
@@ -249,7 +249,7 @@ _generate_msg_py(planner
 _generate_msg_py(planner
   "/home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg"
   "${MSG_I_FLAGS}"
-  "/home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg;/home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg"
+  "/home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg;/home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg"
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/planner
 )
 

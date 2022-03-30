@@ -2,6 +2,8 @@ import numpy as np
 import math
 from scipy.stats.distributions import chi2
 
+from planner.probabilistic_zonotope import pZ
+
 # Planner params
 DT = 0.2  # time discretization
 T_SEG = 3.0  # time duration for each trajectory segment
@@ -42,5 +44,18 @@ OBST_ARR = np.array([0, 0, 1, 2]).reshape((4,1))  # rectangular region: cx, cy, 
 GOAL_ARR = np.array([5, 0, 2, 1]).reshape((4,1))  # cx, cy, h, w
 BIAS_ARR = np.array([0, -2, 1, 1]).reshape((4,1))  # cx, cy, h, w
 BIAS_MAX_VAL = 0.1  # value of max bias in positioning (each axis) measurement
+
+# Store above info in dictionary
+ENV_INFO = {}
+ENV_INFO['goalZ'] = pZ(GOAL_ARR[0:2,[0]], np.diag(GOAL_ARR[[3,2],0]), np.zeros((2,2)))
+ENV_INFO['obstZ'] = [pZ(OBST_ARR[0:2,[0]], np.diag(OBST_ARR[[3,2],0]), np.zeros((2,2)))]
+# Rectangular area where bias is different: x_min, y_min, x_max, y_max
+ENV_INFO['bias_area_lims'] = [BIAS_ARR[0,0]-BIAS_ARR[3,0], 
+                              BIAS_ARR[1,0]-BIAS_ARR[2,0], 
+                              BIAS_ARR[0,0]+BIAS_ARR[3,0], 
+                              BIAS_ARR[1,0]+BIAS_ARR[2,0]]
+ENV_INFO['regular_bias'] = 0.0; ENV_INFO['different_bias'] = BIAS_MAX_VAL
+
+MAX_SEGMENTS = 20
 
 MODEL_NAME = "unicycle_reach_goal"

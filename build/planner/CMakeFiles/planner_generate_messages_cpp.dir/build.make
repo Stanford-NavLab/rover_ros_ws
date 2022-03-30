@@ -72,8 +72,8 @@ CMakeFiles/planner_generate_messages_cpp: /home/navlab-nuc/rover_ros_ws/devel/.p
 
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/include/planner/NominalTrajectory.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/include/planner/NominalTrajectory.h: /home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg
-/home/navlab-nuc/rover_ros_ws/devel/.private/planner/include/planner/NominalTrajectory.h: /home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/include/planner/NominalTrajectory.h: /home/navlab-nuc/rover_ros_ws/src/planner/msg/Control.msg
+/home/navlab-nuc/rover_ros_ws/devel/.private/planner/include/planner/NominalTrajectory.h: /home/navlab-nuc/rover_ros_ws/src/planner/msg/State.msg
 /home/navlab-nuc/rover_ros_ws/devel/.private/planner/include/planner/NominalTrajectory.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/navlab-nuc/rover_ros_ws/build/planner/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating C++ code from planner/NominalTrajectory.msg"
 	cd /home/navlab-nuc/rover_ros_ws/src/planner && /home/navlab-nuc/rover_ros_ws/build/planner/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/navlab-nuc/rover_ros_ws/src/planner/msg/NominalTrajectory.msg -Iplanner:/home/navlab-nuc/rover_ros_ws/src/planner/msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p planner -o /home/navlab-nuc/rover_ros_ws/devel/.private/planner/include/planner -e /opt/ros/noetic/share/gencpp/cmake/..

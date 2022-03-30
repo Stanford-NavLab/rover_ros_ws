@@ -27,17 +27,13 @@ class nn_planner():
         # Publishers
         self.traj_pub = rospy.Publisher('planner/traj', NominalTrajectory, queue_size=10)
 
-        # Subscribers
-        mocap_sub = rospy.Subscriber('sensing/mocap', State, self.mocap_callback)
-
         # Replan timer
         rospy.Timer(rospy.Duration(params.T_SEG), self.replan)
         self.init_time = rospy.get_time()
 
         # Class variables
-        self.x_0 = np.zeros((4,1))
         self.x_nom_end = params.X_0
-        self.x_nom_hist = params.X_0
+        #self.x_nom_hist = params.X_0
         self.traj_msg = None
 
         # Load learned model
@@ -46,15 +42,6 @@ class nn_planner():
         self.model = nn_util.load_model(model_file)
 
         self.done = False  # flag to check when to stop planning
-
-    
-    def mocap_callback(self, data):
-        """Mocap subscriber callback
-
-        Save received initial state.
-
-        """
-        self.x_0 = np.array([[data.x],[data.y],[data.theta],[data.v]])
 
 
     def replan(self, event):

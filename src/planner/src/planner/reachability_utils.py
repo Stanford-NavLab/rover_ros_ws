@@ -193,6 +193,7 @@ def compute_reachable_sets_position_sensing(xnom, unom, Xaug0, P0, Q, WpZ, VpZs,
 
     return Xaug, Zaug, P_all
 
+
 def is_collision_free( Zaug, unsafeZ, collisionCheckOrder=np.inf, distCheck=False, dist_threshold=np.inf):
     """Check if confidence reachable sets are collision free w.r.t. unsafe zonotope
 

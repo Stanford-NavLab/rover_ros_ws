@@ -26,8 +26,10 @@ class Mocap():
         self.x = 0
         self.y = 0
         self.theta = 0
-        # self.v = 0
-        # self.t_prev = 0
+        self.noisy = False
+        self.x_std = 0.1
+        self.y_std = 0.1
+        self.theta_std = 0.1
 
         # Publishers and subscribers
         vrpn_sub = rospy.Subscriber('vrpn_client_node/rover/pose', PoseStamped, self.vrpn_callback)
@@ -59,6 +61,25 @@ class Mocap():
         self.x = pos.x; self.y = pos.y
 
         rospy.loginfo("Received data: (%f, %f, %f)", self.x, self.y, self.theta)
+
+
+    def publish(self):
+        """Publish latest measurement
+
+        If "noisy" parameter is set, add Gaussian noise
+
+        """
+        s = State()
+        if self.noisy:
+            s.x = self.x + np.random.normal(0, self.x_std)
+            s.y = self.y + np.random.normal(0, self.y_std)
+            s.theta = self.theta + np.random.normal(0, self.theta_std)
+        else:
+            s.x = self.x
+            s.y = self.y
+            s.theta = self.theta
+        s.v = 0.0  # no velocity measurement
+        self.mocap_pub.publish(s)
 
 
     def publish(self):
