@@ -1,1 +1,0 @@
-/home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/planner/nn_planner.py

@@ -1,1 +1,0 @@
-/home/navlab-nuc/rover_ros_ws/devel/.private/planner/lib/python3/dist-packages/planner/msg/_State.py

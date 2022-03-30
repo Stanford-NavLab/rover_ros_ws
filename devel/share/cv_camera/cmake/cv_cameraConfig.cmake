@@ -1,1 +1,0 @@
-/home/navlab-nuc/rover_ros_ws/devel/.private/cv_camera/share/cv_camera/cmake/cv_cameraConfig.cmake

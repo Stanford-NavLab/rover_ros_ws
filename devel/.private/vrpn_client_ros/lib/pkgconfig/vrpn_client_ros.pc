@@ -1,8 +1,0 @@
-prefix=/home/navlab-nuc/rover_ros_ws/devel/.private/vrpn_client_ros
-
-Name: vrpn_client_ros
-Description: Description of vrpn_client_ros
-Version: 0.2.2
-Cflags: -I/home/navlab-nuc/rover_ros_ws/src/third_party/vrpn_client_ros/include -I/opt/ros/noetic/include
-Libs: -L${prefix}/lib -lvrpn_client_ros /opt/ros/noetic/lib/libvrpn.a /opt/ros/noetic/lib/libquat.a -lm -lpthread
-Requires: geometry_msgs tf2_ros

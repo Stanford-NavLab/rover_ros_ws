@@ -1,1 +1,0 @@
-/home/navlab-nuc/rover_ros_ws/devel/.private/controller/lib/python3/dist-packages/controller/__init__.py
