@@ -8,11 +8,12 @@ Built and tested on Intel NUC with Ubuntu 20.04 and ROS Noetic.
 1. Install dependencies: `pip install numpy scipy`
 2. Install pytorch: https://pytorch.org/get-started/locally/ (select Stable, Linux, Pip, Python, CPU)
 3. Setup ROS with Arduino (https://maker.pro/arduino/tutorial/how-to-use-arduino-with-robot-operating-system-ros)
-4. Install catkin tools: https://catkin-tools.readthedocs.io/en/latest/installing.html
-5. `git clone https://github.com/adamdai/rover_ros_ws.git`
-6. `cd rover_ros_ws`
-7. `catkin build`
-8. `source devel/setup.bash`
+4. Flash Arduino code: <repo link here>
+5. Install catkin tools: https://catkin-tools.readthedocs.io/en/latest/installing.html
+6. `git clone https://github.com/adamdai/rover_ros_ws.git`
+7. `cd rover_ros_ws`
+8. `catkin build`
+9. `source devel/setup.bash`
 
 
 ## Packages
