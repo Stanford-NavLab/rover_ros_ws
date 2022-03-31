@@ -21,7 +21,7 @@ Nodes:
  - `traj_tracker.py`: Listens for published nominal trajectories and handles state estimation and low-level control for tracking.
 ### planner
 Nodes:
- - `simple_planner.py`: Publishes a single nominal trajectory parameterized by desired linear and angular velocity (can be provided as command-line arguments, i.e., `rosrun simple_planner.py w_des v_des`).
+ - `simple_planner.py`: Publishes a single nominal trajectory parameterized by desired linear and angular velocity (can be provided as command-line arguments, i.e., `rosrun planner simple_planner.py w_des v_des`).
  - `sequence_planner.py`: Publishes a pre-defined sequence of nominal trajectories 
  - `nn_planner.py`: Uses a pre-trained neural network to generate trajectories which avoid obstacles and reach a specified goal region.
  - `reachability_planner.py`: Uses the neural network planner with an added reachability safety layer which checks the safety of planned trajectories and replans if unsafe.
