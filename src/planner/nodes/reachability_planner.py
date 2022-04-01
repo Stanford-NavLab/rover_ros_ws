@@ -3,6 +3,7 @@
 import rospy
 import numpy as np
 import rospkg
+import matplotlib.pyplot as plt
 
 from planner.msg import State, Control, NominalTrajectory
 import planner.planner_utils as plan_util
@@ -87,11 +88,13 @@ class nn_planner():
         # If network output trajectory was not safe
         else:
             # Calculate remaining time for planning next trajectory segment
-            remaining_planning_time = (self.seg_num+1)*params.T_SEG - (rospy.get_time() - self.init_time)
+            remaining_planning_time = (self.seg_num+2)*params.T_SEG - (rospy.get_time() - self.init_time)
             # Init selected trajectory parameter dist
             selected_trajectory_param_dist_sq = np.inf
             # Sample new trajectory parameter if time remaining in current segment is sufficient
+            print(remaining_planning_time)
             while remaining_planning_time > self.max_check_time:
+                print("Resampling")
                 # Sample new trajectory parameter near network output
                 [kw, kv] = plan_util.sample_near_network_output(action_mean, action_cov)
                 # Check safety of sampled trajectory parameter
@@ -112,7 +115,7 @@ class nn_planner():
                     self.P0 = P_all[:,:,params.SEG_LEN]
                     
                 #calculate remaining time for planning upcoming segment
-                remaining_planning_time = (self.seg_num+1)*params.T_SEG - (rospy.get_time() - self.init_time)
+                remaining_planning_time = (self.seg_num+2)*params.T_SEG - (rospy.get_time() - self.init_time)
 
         if safeTrajectoryFound:
             print(" Generating trajectory segment with kw = ", round(kw_safe,2), "kv = ", round(kv_safe,2))

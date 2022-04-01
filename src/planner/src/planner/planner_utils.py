@@ -143,25 +143,16 @@ def check_trajectory_parameter_safety(kw, kv, x_nom0, Xaug0, P0, env):
     [xnom_seg, unom_seg] = trajectory_parameter_to_nominal_trajectory(
         kw, kv, x_nom0, params.T_SEG, params.DT, params.MAX_ACC_MAG)
 
-    print("xnom: ", xnom_seg)
-    print("unom: ", unom_seg)
-
     # Create motion and sensing pZs along nominal trajectory
     [WpZ, VpZs, Rhats] = reach_util.create_motion_sensing_pZ(
         xnom_seg, params.Q_EKF, params.R_EKF, params.SIGMA_CONF_LVL, 
         env['bias_area_lims'], env['regular_bias'], 
         env['different_bias'])
 
-    print("WpZ: ", WpZ)
-    print("VpZ: ", WpZ)
-
     # Compute reachable sets for the trajectory with either range sensing or position sensing
     [Xaug, Zaug, P_all] = reach_util.compute_reachable_sets_position_sensing(
         xnom_seg, unom_seg, Xaug0, P0, params.Q_EKF, WpZ, VpZs, Rhats, 
         params.Q_LQR, params.R_LQR, params.SIGMA_CONF_LVL, params.DT)
-
-    print("Xaug: ", Xaug)
-    print("Zaug: ", Zaug)
 
     # Check if trajectory is safe
     isSafe = reach_util.is_collision_free(Zaug, env['obstZ'], 
