@@ -40,6 +40,8 @@ Contains all third party ROS packages used: `vrpn_client_ros`, `cv_camera`, `apr
 2. Start rosserial: `rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0`
 3. Start sensing nodes:
     - `rosrun sensing mocap.py`
+    - `rosrun cv_camera cv_camera_node`
+    - `roslaunch apriltag_ros continuous_detection.launch`
 4. Start planning/control nodes:
     - `rosrun controller traj_tracker.py`
     - `rosrun planner simple_planner.py` or `rosrun planner nn_planner.py`
