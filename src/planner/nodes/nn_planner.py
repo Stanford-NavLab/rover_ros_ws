@@ -42,6 +42,7 @@ class nn_planner():
         self.model = nn_util.load_model(model_file)
 
         self.done = False  # flag to check when to stop planning
+        self.seg_num = 1  # current segment number
 
 
     def replan(self, event):
@@ -78,6 +79,12 @@ class nn_planner():
         if reachedGoal:
             rospy.loginfo("Reached goal")
             self.done = True
+
+        self.seg_num += 1
+        if self.seg_num >= params.MAX_SEGMENTS:
+            rospy.loginfo("Max number of segments reached...stopping planning")
+            self.done = True
+
 
     def run(self):
         """Run node

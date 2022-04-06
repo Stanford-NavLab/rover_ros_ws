@@ -21,6 +21,8 @@ class nn_planner():
 
     """
     def __init__(self):
+        #np.random.seed(0)
+
         # Initialize node 
         rospy.init_node('nn_planner', anonymous=True, disable_signals=True)
         self.rate = rospy.Rate(10)
@@ -51,7 +53,7 @@ class nn_planner():
         print("Calibrating max safety check time: ", self.max_check_time, " s")
 
         self.done = False  # flag to check when to stop planning
-        self.seg_num = 0  # current segment number
+        self.seg_num = 1  # current segment number
 
         #complete x_nom and u_nom
         # x_nom_RR = x_nom0; u_nom_RR = np.zeros((2,0))
@@ -63,9 +65,15 @@ class nn_planner():
         """Plan next trajectory segment
 
         """
-        print("Replanning: t = ", rospy.get_time() - self.init_time)
+        # In order to establish receding horizon planning, we plan the 
+        # first segment during segment 1 and send it at the start of planning segment 2
+        if self.seg_num == 2:
+            print("  Publishing trajectory for segment 1 \n")
+            self.traj_pub.publish(self.traj_msg)
 
-        #reduce initial reach set to specified order
+        print("Replanning : segment ", self.seg_num, ", t = ", rospy.get_time() - self.init_time)
+
+        # Reduce initial reach set to specified order
         self.Xaug0 = pZ.reduce(self.Xaug0, params.MAX_ORDER_INIT_REACH_SET)
 
         # Get network output
@@ -73,71 +81,80 @@ class nn_planner():
         kw0 = action_mean[0,0]; kv0 = action_mean[0,1]
 
         # Check if trajectory specified by above nominal trajectory is safe (fail-safe trajectory is appended)
-        [safeTrajectoryFound, Xaug, Zaug, P_all, xnom_seg, unom_seg] = plan_util.check_trajectory_parameter_safety(kw0, kv0, self.x_nom0, self.Xaug0, self.P0, params.ENV_INFO)
+        [safeTrajectoryFound, cand_Xaug, _, cand_P_all, cand_xnom_seg, cand_unom_seg] = plan_util.check_trajectory_parameter_safety(kw0, kv0, self.x_nom0, self.Xaug0, self.P0, params.ENV_INFO)
 
         # If network output trajectory was safe
         if safeTrajectoryFound:
             # Select network output as trajectory parameter
             kw_safe = kw0; kv_safe = kv0
-
-            # Store final nominal state, reachable set, state estimation covariance
-            self.x_nom0 = xnom_seg[:,[params.SEG_LEN]]
-            self.Xaug0 = Xaug[params.SEG_LEN]
-            self.P0 = P_all[:,:,params.SEG_LEN]
+            # Store selected trajectory information
+            Xaug = cand_Xaug
+            P_all = cand_P_all
+            xnom_seg = cand_xnom_seg
+            unom_seg = cand_unom_seg
             
         # If network output trajectory was not safe
         else:
             # Calculate remaining time for planning next trajectory segment
-            remaining_planning_time = (self.seg_num+2)*params.T_SEG - (rospy.get_time() - self.init_time)
+            remaining_planning_time = (self.seg_num+1)*params.T_SEG - (rospy.get_time() - self.init_time)
             # Init selected trajectory parameter dist
             selected_trajectory_param_dist_sq = np.inf
             # Sample new trajectory parameter if time remaining in current segment is sufficient
-            print(remaining_planning_time)
+            print("  Initial trajectory unsafe, remaining planning time: ", remaining_planning_time)
             while remaining_planning_time > self.max_check_time:
-                print("Resampling")
                 # Sample new trajectory parameter near network output
                 [kw, kv] = plan_util.sample_near_network_output(action_mean, action_cov)
+                print("  Resampling kw = ", round(kw,2), " kv = ", round(kv,2))
                 # Check safety of sampled trajectory parameter
-                [isSafe, Xaug, Zaug, P_all, xnom_seg, unom_seg] = plan_util.check_trajectory_parameter_safety(kw, kv, self.x_nom0, self.Xaug0, self.P0, params.ENV_INFO)
+                [isSafe, Xaug, _, P_all, cand_xnom_seg, cand_unom_seg] = plan_util.check_trajectory_parameter_safety(kw, kv, self.x_nom0, self.Xaug0, self.P0, params.ENV_INFO)
                 
                 # Select trajectory if it is safe and if parameter distance is lower than previously selected parameter
                 current_trajectory_param_dist_sq = (kw-kw0)**2 + (kv-kv0)**2
                 if isSafe and current_trajectory_param_dist_sq < selected_trajectory_param_dist_sq:
                     safeTrajectoryFound = True
-                    selected_Zaug = Zaug
-                    #select current trajectory parameter
+                    # Select current trajectory parameter
                     kw_safe = kw; kv_safe = kv
                     selected_trajectory_param_dist_sq = current_trajectory_param_dist_sq
-                    selected_nominal_trajectory = [xnom_seg, unom_seg]
-                    #store final nominal state, reachable set, state estimation covariance
-                    self.x_nom0 = xnom_seg[:,[params.SEG_LEN]]
-                    self.Xaug0 = Xaug[params.SEG_LEN]
-                    self.P0 = P_all[:,:,params.SEG_LEN]
+                    # Store selected trajectory information
+                    Xaug = cand_Xaug
+                    P_all = cand_P_all
+                    xnom_seg = cand_xnom_seg
+                    unom_seg = cand_unom_seg
                     
-                #calculate remaining time for planning upcoming segment
-                remaining_planning_time = (self.seg_num+2)*params.T_SEG - (rospy.get_time() - self.init_time)
+                # Calculate remaining time for planning upcoming segment
+                remaining_planning_time = (self.seg_num+1)*params.T_SEG - (rospy.get_time() - self.init_time)
 
         if safeTrajectoryFound:
-            print(" Generating trajectory segment with kw = ", round(kw_safe,2), "kv = ", round(kv_safe,2))
-            print(" Segment endpoint: x = ", round(self.x_nom0[0][0],2), 
-                                    " y = ", round(self.x_nom0[1][0],2), 
-                                    " theta = ", round(self.x_nom0[2][0],2),"\n")
+            # Update initial conditions for next segment
+            self.x_nom0 = xnom_seg[:,[params.SEG_LEN]]
+            self.Xaug0 = Xaug[params.SEG_LEN]
+            self.P0 = P_all[:,:,params.SEG_LEN]
+            
+            print("  Generating trajectory segment with kw = ", round(kw_safe,2), "kv = ", round(kv_safe,2))
+            print("  Segment endpoint: x = ", round(self.x_nom0[0][0],2), 
+                                     " y = ", round(self.x_nom0[1][0],2), 
+                                     " theta = ", round(self.x_nom0[2][0],2))
         
             # Publish trajectory
             self.traj_msg = NominalTrajectory()
             self.traj_msg.states = plan_util.wrap_states(xnom_seg)
             self.traj_msg.controls = plan_util.wrap_controls(unom_seg)
-            self.traj_pub.publish(self.traj_msg)
+            # For segment 1, we hold off on publishing until start of planning segment 2
+            if self.seg_num != 1:
+                print("  Publishing trajectory for segment ", self.seg_num, "\n")
+                self.traj_pub.publish(self.traj_msg)
+
+            # Check if we have reached the goal region
+            reachedGoal = plan_util.is_trajectory_inside_region(xnom_seg, params.GOAL_ARR)
+            if reachedGoal:
+                rospy.loginfo("Reached goal")
+                self.done = True
         else:
             # Decide to execute fail-safe maneuver
             print("Failed to find safe trajectory - executing fail-safe maneuver")
             self.done = True
 
-        # Check if we have reached the goal region
-        reachedGoal = plan_util.is_trajectory_inside_region(xnom_seg, params.GOAL_ARR)
-        if reachedGoal:
-            rospy.loginfo("Reached goal")
-            self.done = True
+        
 
         self.seg_num += 1
         if self.seg_num >= params.MAX_SEGMENTS:

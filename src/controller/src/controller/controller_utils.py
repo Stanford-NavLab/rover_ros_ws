@@ -28,6 +28,8 @@ def compute_control(x_nom, u_nom, x_hat, K):
     # Wrap theta 
     err[2] = wrap_angle(err[2])
     
+    print(" - x_nom: ", np.round(x_nom[0],2), " y_nom: ", np.round(x_nom[1],2))
+    print(" - x_err: ", np.round(err[0],2), " y_err: ", np.round(err[1],2))
     # print(" K: ", np.round(K,2))
     # print(" x_hat: ", x_hat)
     # print(" x_nom: ", x_nom)

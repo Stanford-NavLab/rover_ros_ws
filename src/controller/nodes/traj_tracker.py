@@ -2,7 +2,8 @@
 
 import rospy
 import numpy as np
-import time
+import csv
+import os
 
 from scipy.spatial.transform import Rotation as R
 from geometry_msgs.msg import Twist, PoseStamped
@@ -30,6 +31,7 @@ class traj_tracker():
 
         # Class variables
         self.idx = 0  # current index in the trajectory
+        self.seg_num = 1  # current segment number
         self.X_nom_curr = None
         self.U_nom_curr = None
         self.X_nom_next = None
@@ -52,6 +54,13 @@ class traj_tracker():
         # Subscribers
         traj_sub = rospy.Subscriber('planner/traj', NominalTrajectory, self.traj_callback)
         measurement_sub = rospy.Subscriber('sensing/mocap', State, self.measurement_callback)
+
+        # Logging
+        path = '/home/navlab-nuc/flightroom_data/4_5_2022/trajectory_tracking/'
+        filename = 'track.csv'
+        self.logger = csv.writer(open(os.path.join(path, filename), 'w'))
+        self.logger.writerow(['t', 'x', 'y', 'theta', 'x_nom', 'y_nom', 'theta_nom', 'v_nom', 
+                              'x_hat', 'y_hat', 'theta_hat', 'v_hat', 'u_w', 'u_a'])
 
 
     def traj_callback(self, data):
@@ -94,8 +103,9 @@ class traj_tracker():
         x_nom = np.array([[x_nom_msg.x],[x_nom_msg.y],[x_nom_msg.theta],[x_nom_msg.v]])
         u_nom_msg = self.U_nom_curr[self.idx]
         u_nom = np.array([[u_nom_msg.omega],[u_nom_msg.a]])
-
-        if self.idx == 0:
+        
+        # Start of first segment
+        if self.idx == 0 and self.seg_num == 1:
             self.x_hat = x_nom
 
         A,B,C,K = generate_robot_matrices(x_nom, u_nom, params.Q_LQR, params.R_LQR, params.DT)
@@ -124,6 +134,11 @@ class traj_tracker():
 
         self.idx += 1
 
+        # Log data
+        self.logger.writerow([rospy.get_time(), self.z[0][0], self.z[1][0], self.z[2][0], 
+                              x_nom[0][0], x_nom[1][0], x_nom[2][0], x_nom[3][0], self.x_hat[0][0], 
+                              self.x_hat[1][0], self.x_hat[2][0], self.x_hat[3][0], u[0][0], u[1][0]])
+
         # ======== Check for end of trajectory ========
         if self.idx >= params.SEG_LEN:
             # Finished tracking current trajectory 
@@ -131,11 +146,13 @@ class traj_tracker():
 
             # If we have a next trajectory, switch to tracking that. Otherwise, continue the trajectory (braking maneuver)
             if self.X_nom_next is not None:
+                rospy.loginfo("Switching to next trajectory")
                 self.X_nom_curr = self.X_nom_next
                 self.U_nom_curr = self.U_nom_next
                 self.X_nom_next = None
                 self.X_nom_next = None
                 self.idx = 0
+                self.seg_num += 1
             else:
                 rospy.loginfo("Executing braking maneuver")
 
