@@ -39,26 +39,13 @@ class sequence_planner():
         # publishers
         self.traj_pub = rospy.Publisher('planner/traj', NominalTrajectory, queue_size=10)
 
-        # subscribers
-        mocap_sub = rospy.Subscriber('sensing/mocap', State, self.mocap_callback)
-
-        # class variables
-        self.x_0 = np.zeros((4,1))
+        self.x_nom_end = params.X_0
         self.traj_msg = None
 
         # trajectory sequence
-        self.k_seq = np.array([[0.0, 0.2, -0.2, 0.3, -0.3],
-                               [0.5, 0.5, 0.5, 0.6, 0.6]])
+        self.k_seq = np.array([[0.27, -0.19, -0.03, 0.01, -0.09, -0.12, 0.07],
+                               [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]])
         self.n_traj = self.k_seq.shape[1]
-
-    
-    def mocap_callback(self, data):
-        """Mocap subscriber callback
-
-        Save received initial state.
-
-        """
-        self.x_0 = np.array([[data.x],[data.y],[data.theta],[data.v]])
 
 
     def generate_trajectory(self, kw, kv):
@@ -68,9 +55,11 @@ class sequence_planner():
         rospy.loginfo("Generating nominal trajectory with w = %f, v = %f", kw, kv)
 
         x_nom, u_nom = plan_util.trajectory_parameter_to_nominal_trajectory(
-            kw, kv, self.x_0, params.T_SEG, params.DT, params.MAX_ACC_MAG)
+            kw, kv, self.x_nom_end, params.T_SEG, params.DT, params.MAX_ACC_MAG)
 
         rospy.loginfo("Final state: x = %f, y = %f, theta = %f", x_nom[0][-1], x_nom[1][-1], x_nom[2][-1])
+
+        self.x_nom_end = x_nom[:,[params.SEG_LEN]]
 
         self.traj_msg = NominalTrajectory()
         self.traj_msg.states = plan_util.wrap_states(x_nom)

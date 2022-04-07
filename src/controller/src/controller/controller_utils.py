@@ -74,7 +74,7 @@ def omega_to_PWM(omega):
     """
     # Linear zone
     if np.abs(omega) < 0.7301:
-        return (0.2/0.7301) * omega 
+        return (0.1/0.7301) * omega 
 
     # Positive
     elif omega > 0:

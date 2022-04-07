@@ -56,7 +56,7 @@ class traj_tracker():
         measurement_sub = rospy.Subscriber('sensing/mocap', State, self.measurement_callback)
 
         # Logging
-        path = '/home/navlab-nuc/flightroom_data/4_5_2022/trajectory_tracking/'
+        path = '/home/navlab-nuc/flightroom_data/4_6_2022/trajectory_tracking/'
         filename = 'track.csv'
         self.logger = csv.writer(open(os.path.join(path, filename), 'w'))
         self.logger.writerow(['t', 'x', 'y', 'theta', 'x_nom', 'y_nom', 'theta_nom', 'v_nom', 
