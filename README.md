@@ -45,4 +45,4 @@ Contains all third party ROS packages used: `vrpn_client_ros`, `cv_camera`, `apr
     - `roslaunch apriltag_ros continuous_detection.launch`
 4. Start planning/control nodes:
     - `rosrun controller traj_tracker.py`
-    - `rosrun planner simple_planner.py` or `rosrun planner nn_planner.py`
+    - `rosrun planner simple_planner.py` or `rosrun planner nn_planner.py` or `rosrun planner reachability_planner.py`
