@@ -37,10 +37,11 @@ class traj_tracker():
         self.X_nom_next = None
         self.U_nom_next = None
 
-        self.x_hat = np.zeros((4,1))
-        self.P = params.P_0
+        self.x_hat = np.zeros((4,1))  # state estimate
+        self.P = params.P_0  # covariance
 
-        self.z = np.zeros((3,1))
+        self.z = np.zeros((3,1))  # measurement
+        self.z_gt = np.zeros((3,1))  # ground-truth measurement (no noise)
         self.v_des = 0
         self.t_start = 0
 
@@ -53,13 +54,15 @@ class traj_tracker():
 
         # Subscribers
         traj_sub = rospy.Subscriber('planner/traj', NominalTrajectory, self.traj_callback)
-        measurement_sub = rospy.Subscriber('sensing/mocap', State, self.measurement_callback)
+        measurement_sub = rospy.Subscriber('sensing/mocap_noisy', State, self.measurement_callback)
+        gt_sub = rospy.Subscriber('sensing/mocap', State, self.gt_callback)
 
         # Logging
-        path = '/home/navlab-nuc/flightroom_data/4_6_2022/trajectory_tracking/'
+        path = '/home/navlab-nuc/flightroom_data/4_7_2022/'
         filename = 'track.csv'
         self.logger = csv.writer(open(os.path.join(path, filename), 'w'))
-        self.logger.writerow(['t', 'x', 'y', 'theta', 'x_nom', 'y_nom', 'theta_nom', 'v_nom', 
+        self.logger.writerow(['t', 'x', 'y', 'theta', 'z_x', 'z_y', 'z_theta', 
+                              'x_nom', 'y_nom', 'theta_nom', 'v_nom', 
                               'x_hat', 'y_hat', 'theta_hat', 'v_hat', 'u_w', 'u_a'])
 
 
@@ -89,6 +92,16 @@ class traj_tracker():
         """
         # For mocap measurement
         self.z = np.array([[data.x],[data.y],[data.theta]])
+
+
+    def gt_callback(self, data):
+        """Ground-truth subscriber callback.
+
+        Save received ground-truth.
+
+        """
+        # Mocap data
+        self.z_gt = np.array([[data.x],[data.y],[data.theta]])
 
 
     def track(self):
@@ -135,7 +148,8 @@ class traj_tracker():
         self.idx += 1
 
         # Log data
-        self.logger.writerow([rospy.get_time(), self.z[0][0], self.z[1][0], self.z[2][0], 
+        self.logger.writerow([rospy.get_time(), self.z_gt[0][0], self.z_gt[1][0], self.z_gt[2][0], 
+                              self.z[0][0], self.z[1][0], self.z[2][0],
                               x_nom[0][0], x_nom[1][0], x_nom[2][0], x_nom[3][0], self.x_hat[0][0], 
                               self.x_hat[1][0], self.x_hat[2][0], self.x_hat[3][0], u[0][0], u[1][0]])
 

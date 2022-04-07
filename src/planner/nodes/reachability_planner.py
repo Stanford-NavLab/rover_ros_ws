@@ -3,7 +3,8 @@
 import rospy
 import numpy as np
 import rospkg
-import matplotlib.pyplot as plt
+import csv
+import os
 
 from planner.msg import State, Control, NominalTrajectory
 import planner.planner_utils as plan_util
@@ -21,7 +22,7 @@ class nn_planner():
 
     """
     def __init__(self):
-        #np.random.seed(0)
+        np.random.seed(0)
 
         # Initialize node 
         rospy.init_node('nn_planner', anonymous=True, disable_signals=True)
@@ -55,10 +56,12 @@ class nn_planner():
         self.done = False  # flag to check when to stop planning
         self.seg_num = 1  # current segment number
 
-        #complete x_nom and u_nom
-        # x_nom_RR = x_nom0; u_nom_RR = np.zeros((2,0))
-        # # Complete confidence zonotopes
-        # Z_aug_RR = [pZ.conf_zonotope(pZ(self.Xaug0.c[0:2,:], self.Xaug0.G[0:2,:], self.Xaug0.Sigma[0:2,0:2]), params.CONF_VALUE)]
+        # Logging
+        path = '/home/navlab-nuc/flightroom_data/4_7_2022/'
+        filename = 'reach_plan_'+str(rospy.get_time())+'.csv'
+        self.log_file = open(os.path.join(path, filename), 'w')
+        self.logger = csv.writer(self.log_file)
+        self.logger.writerow(['t', 'kw', 'kv', 'rs'])
         
 
     def replan(self, event):
@@ -105,6 +108,8 @@ class nn_planner():
                 # Sample new trajectory parameter near network output
                 [kw, kv] = plan_util.sample_near_network_output(action_mean, action_cov)
                 print("  Resampling kw = ", round(kw,2), " kv = ", round(kv,2))
+                if not self.done:
+                    self.logger.writerow([rospy.get_time(), kw, kv, 1])
                 # Check safety of sampled trajectory parameter
                 [isSafe, Xaug, _, P_all, cand_xnom_seg, cand_unom_seg] = plan_util.check_trajectory_parameter_safety(kw, kv, self.x_nom0, self.Xaug0, self.P0, params.ENV_INFO)
                 
@@ -144,6 +149,9 @@ class nn_planner():
                 print("  Publishing trajectory for segment ", self.seg_num, "\n")
                 self.traj_pub.publish(self.traj_msg)
 
+            # Write to log
+            self.logger.writerow([rospy.get_time(), kw_safe, kv_safe, 0])
+
             # Check if we have reached the goal region
             reachedGoal = plan_util.is_trajectory_inside_region(xnom_seg, params.GOAL_ARR)
             if reachedGoal:
@@ -153,8 +161,6 @@ class nn_planner():
             # Decide to execute fail-safe maneuver
             print("Failed to find safe trajectory - executing fail-safe maneuver")
             self.done = True
-
-        
 
         self.seg_num += 1
         if self.seg_num >= params.MAX_SEGMENTS:
@@ -178,6 +184,7 @@ class nn_planner():
 
             self.rate.sleep()
 
+        self.log_file.close()
         rospy.loginfo("Exiting node")
 
 

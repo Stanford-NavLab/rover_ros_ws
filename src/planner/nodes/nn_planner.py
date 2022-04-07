@@ -4,6 +4,8 @@ import numpy as np
 import time
 import rospy
 import rospkg
+import csv
+import os
 
 
 from planner.msg import State, NominalTrajectory
@@ -43,6 +45,13 @@ class nn_planner():
 
         self.done = False  # flag to check when to stop planning
         self.seg_num = 1  # current segment number
+
+        # Logging
+        path = '/home/navlab-nuc/flightroom_data/4_7_2022/'
+        filename = 'nn_plan_'+str(rospy.get_time())+'.csv'
+        self.log_file = open(os.path.join(path, filename), 'w')
+        self.logger = csv.writer(self.log_file)
+        self.logger.writerow(['t', 'kw', 'kv'])
 
 
     def replan(self, event):
@@ -85,6 +94,9 @@ class nn_planner():
             rospy.loginfo("Max number of segments reached...stopping planning")
             self.done = True
 
+        # Write to log
+        self.logger.writerow([rospy.get_time(), kw, kv])
+
 
     def run(self):
         """Run node
@@ -102,6 +114,7 @@ class nn_planner():
 
             self.rate.sleep()
 
+        self.log_file.close()
         rospy.loginfo("Exiting node")
 
 
