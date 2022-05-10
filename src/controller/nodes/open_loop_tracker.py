@@ -15,13 +15,10 @@ from planner.planner_utils import wrap_states
 from planner.reachability_utils import generate_robot_matrices
 import params.params as params
 
-class traj_tracker():
-    """Trajectory tracker
+class open_loop_tracker():
+    """Open-loop tracker
 
-    Tracks nominal trajectories by applying linear control feedback using 
-    state estimate and sending motor commands. If a new trajectory is received 
-    while tracking the current trajectory, it will switch to tracking the new
-    trajectory once it has finished the current trajectory.
+    Tracks nominal trajectories open-loop.
 
     """
     def __init__(self):

@@ -140,8 +140,10 @@ def check_trajectory_parameter_safety(kw, kv, x_nom0, Xaug0, P0, env):
     
     """
     # Create nominal trajectory for given trajectory parameter
+    start_time = time.time()
     [xnom_seg, unom_seg] = trajectory_parameter_to_nominal_trajectory(
         kw, kv, x_nom0, params.T_SEG, params.DT, params.MAX_ACC_MAG)
+    print("Trajectory generated from parameter time: ", time.time() - start_time, " seconds")
 
     # Create motion and sensing pZs along nominal trajectory
     [WpZ, VpZs, Rhats] = reach_util.create_motion_sensing_pZ(
@@ -221,10 +223,10 @@ def sample_near_trajectory_parameters(kw0, kv0):
     """
     kw = np.inf
     while kw < params.KW_LIMS[0] or kw > params.KW_LIMS[1]:
-        kw = np.random.normal( kw0, params.SAMPLE_STD_DEV)
+        kw = np.random.normal(kw0, params.SAMPLE_STD_DEV)
     kv = np.inf
     while kv < params.KV_LIMS[0] or kv > params.KV_LIMS[1]:
-        kv = np.random.normal( kv0, params.SAMPLE_STD_DEV)
+        kv = np.random.normal(kv0, params.SAMPLE_STD_DEV)
 
     return kw, kv
 

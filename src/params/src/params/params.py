@@ -31,8 +31,8 @@ CHECK_DIST_REQ = not np.isinf(COLLISION_CHECK_DIST_THRESH)  # boolean indicating
 COLLISION_CHECK_ZONOTOPE_ORDER = 4  # max order of confidence zonotope for collision-checking
 
 # Controller params
-Q_LQR = np.diag([20, 20, 50, 150])  # LQR state cost matrix
-R_LQR = np.diag([50, 10])  # LQR control cost matrix
+Q_LQR = np.diag([50, 50, 50, 150])  # LQR state cost matrix
+R_LQR = np.diag([50, 50])  # LQR control cost matrix
 
 # from initial flight room tests
 #Q_EKF = np.diag([0.01, 0.01, 0.05, 0.01])  # EKF process noise covariance
@@ -40,16 +40,16 @@ R_LQR = np.diag([50, 10])  # LQR control cost matrix
 #R_EKF = np.diag([0.001, 0.001, 0.0001])
 
 # from original simulation
-Q_EKF = np.diag([0.0001, 0.0001, 0.0005, 0.0001])  # EKF process noise covariance
+Q_EKF = 3*np.diag([0.0001, 0.0001, 0.0005, 0.0001])  # EKF process noise covariance
 R_EKF = np.diag([0.01, 0.01, 0.001])  # EKF measurement noise covariance (for mocap)
 
 X_0 = np.array([-5, 0, 0, 0]).reshape((4,1))  # Initial robot state
 P_0 = 0.01 * np.diag(np.array([0.01, 0.01, 0.001, 0.0]))  # Initial state estimation covariance
 
 # Environment
-OBST_ARR = np.array([-3, 0, 2, 1]).reshape((4,1))  # rectangular region: cx, cy, h, w
+OBST_ARR = np.array([0, 0, 0.5, 1]).reshape((4,1))  # rectangular region: cx, cy, h, w
 GOAL_ARR = np.array([5, 0, 2, 1]).reshape((4,1))  # cx, cy, h, w
-BIAS_ARR = np.array([0, -2, 1, 1]).reshape((4,1))  # cx, cy, h, w
+BIAS_ARR = np.array([0, -20, 1, 1]).reshape((4,1))  # cx, cy, h, w
 BIAS_MAX_VAL = 0.1  # value of max bias in positioning (each axis) measurement
 
 # Store above info in dictionary

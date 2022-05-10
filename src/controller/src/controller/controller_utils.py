@@ -74,7 +74,7 @@ def omega_to_PWM(omega):
     """
     # Linear zone
     if np.abs(omega) < 0.7301:
-        return (0.1/0.7301) * omega 
+        return (0.08/0.7301) * omega 
 
     # Positive
     elif omega > 0:
@@ -84,7 +84,7 @@ def omega_to_PWM(omega):
 
         # use a polynomial fit to data
         p = [0.0180, -0.0751, 0.2235, 0.0708]
-        pwm = np.polyval(p, omega)
+        pwm = (0.08/0.2) * np.polyval(p, omega)
 
         # clip to between 0 and 1
         return np.clip(pwm, 0.0, 1.0)
@@ -95,7 +95,7 @@ def omega_to_PWM(omega):
         omega = np.clip(omega, 0.0, 4.1997)
 
         p = [0.0180, -0.0751, 0.2235, 0.0708]
-        pwm = np.polyval(p, omega)
+        pwm = (0.08/0.2) * np.polyval(p, omega)
 
         return np.clip(-pwm, -1.0, 0.0)
 
