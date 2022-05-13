@@ -3,7 +3,8 @@ import rospkg
 import numpy as np
 import time 
 
-from planner.msg import NominalTrajectory
+from trajectory_msgs.msg import JointTrajectory
+
 import params.rtd_params as params
 from rtd.LPM import LPM
 import rtd.utils as utils
@@ -27,7 +28,7 @@ class LinearPlanner:
     """
     def __init__(self):
         # Initialize node
-        rospy.init_node('nn_planner', anonymous=True, disable_signals=True)
+        rospy.init_node('linear_planner', anonymous=True, disable_signals=True)
         self.rate = rospy.Rate(10)
 
         # Initialize LPM object
@@ -40,16 +41,12 @@ class LinearPlanner:
         rospy.Timer(rospy.Duration(params.T_REPLAN), self.replan)
 
         # Publishers
-        self.traj_pub = rospy.Publisher('planner/traj', NominalTrajectory, queue_size=10)
+        self.traj_pub = rospy.Publisher('planner/traj', JointTrajectory, queue_size=10)
 
         # Initial conditions [m],[m/s],[m/s^2]
         self.p_0 = params.P_0
         self.v_0 = np.zeros((params.N_DIM,1))
         self.a_0 = np.zeros((params.N_DIM,1))
-
-        # Current planned trajectory
-        self.trajectory = utils.Trajectory(self.LPM.time, params.N_DIM)
-        self.trajectory.P = np.tile(self.p_0, (1,self.N_T_PLAN))  # Initialize stationary
 
         # Goal position [m]
         self.p_goal = params.P_GOAL
@@ -67,10 +64,12 @@ class LinearPlanner:
         ----------
         positions : np.array
             Trajectory positions to check against obstacles.
+
         Returns
         -------
         bool
             True if plan is safe, False if there is a collision.
+
         """
         for obs in self.obstacles:
             if not utils.check_obs_collision(positions, obs, 2*params.R_BOT):
@@ -88,13 +87,13 @@ class LinearPlanner:
         ----------
         t_start_plan : float
             Time at which planning started for this iteration
+
         Returns
         -------
         np.array or None
             Optimal v_peak or None if failed to find one
         
         """
-
         # Generate potential v_peak samples
         V_peak = utils.rand_in_bounds(params.V_BOUNDS, params.N_PLAN_MAX)
         # Eliminate samples that exceed the max velocity and max delta from initial velocity
@@ -130,23 +129,13 @@ class LinearPlanner:
         return None
 
 
-    def replan(self, initial_conditions):
+    def replan(self, event):
         """Replan
 
         Periodically called to perform trajectory optimization.
-
-        Parameters
-        ----------
-        initial_conditions : Tuple
-
-        Returns
-        -------
         
         """
         t_start_plan = time.time()
-
-        # Update initial conditions
-        self.p_0, self.v_0, self.a_0 = initial_conditions
 
         # Find a new v_peak
         v_peak = self.traj_opt(t_start_plan)
@@ -160,11 +149,23 @@ class LinearPlanner:
             P,V,A = self.LPM.compute_trajectory(k)
             P = P + self.p_0  # translate to p_0
 
-            print("Found new trajectory")
-            # TODO: create and send trajectory msg
+            # Update initial conditions
+            self.v_0 = V[:,params.NEXT_IC_IDX][:,None]
+            self.a_0 = A[:,params.NEXT_IC_IDX][:,None]
+            self.p_0 = P[:,params.NEXT_IC_IDX][:,None]
+
+            print("Found new trajectory, v_pk = ", np.round(k[:,2], 2))
+            print(" Start point: ", np.round(P[:,0], 2))
+            print(" End point: ", np.round(P[:,-1], 2))
+
+            # Create and send trajectory msg
+            t2start = 0  # TODO: this is just a filler value for now
+            traj_msg = utils.wrap_2D_traj_msg((P,V,A), t2start)
+            self.traj_pub.publish(traj_msg)
         
         # Check for goal-reached
-        if np.linalg.norm(P[:,-1] - self.p_goal) < params.R_GOAL_REACHED:
+        if np.linalg.norm(P[:,-1][:,None] - self.p_goal) < params.R_GOAL_REACHED:
+            print("Goal reached")
             self.done = True
 
     
@@ -184,7 +185,6 @@ class LinearPlanner:
 
             self.rate.sleep()
 
-        self.log_file.close()
         rospy.loginfo("Exiting node")
 
 

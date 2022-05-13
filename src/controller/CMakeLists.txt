@@ -161,6 +161,9 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   nodes/traj_tracker.py
+  nodes/open_loop_tracker.py
+  nodes/linear_tracker.py
+  nodes/lidar_tracker.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

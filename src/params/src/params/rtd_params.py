@@ -1,9 +1,14 @@
 import numpy as np
 
 # Timing parameters
+DT = 0.1  # [s] trajectory time discretization
 T_REPLAN = 0.5  # [s] amount of time between replans
 T_PLAN = 0.4  # [s] amount of time allotted for planning itself 
               #     (allow buffer for actual tranmission of plan)
+TRAJ_TIME_LEN = 3.0  # [s] Trajectory total duration
+TRAJ_IDX_LEN = int(TRAJ_TIME_LEN / DT) + 1  # Trajectory length in timestep
+
+NEXT_IC_IDX = 5  # Index of trajectory for next set of initial conditions for replanning
 
 N_DIM = 2  # workspace dimension (i.e. 2D or 3D)
 

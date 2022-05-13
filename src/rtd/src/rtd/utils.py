@@ -4,37 +4,115 @@ Utilities for RTD.
 
 """
 
+import rospy
 import numpy as np
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 
 class Trajectory:
     """Trajectory class
+
     Planned trajectory
     
     Attributes
     ----------
     length : int
-        Length of trajectory (i.e. number of timesteps)
+        Length of trajectory (i.e. number of timesteps), abbreviated as N below
     N_dim : int
         State dimension of the trajectory (i.e. 2D or 3D)
-    t : np.array (1 x N)
+    time : np.array (1 x N)
         Time array
-    p : np.array (N_dim x N)
+    positions : np.array (N_dim x N)
         Positions
-    v : np.array (N_dim x N)
+    velocities : np.array (N_dim x N)
         Velocities
-    a : np.array (N_dim x N)
+    accelerations : np.array (N_dim x N)
         Accelerations
-    """
 
-    def __init__(self, T, N_dim):
+    """
+    # def __init__(self, time, N_dim):
+    #     """Initialize a trajectory with 0 position, velocity, and acceleration"""
+    #     self.length = len(time)
+    #     self.N_dim = N_dim
+    #     self.time = time
+    #     self.positions = np.zeros((N_dim, self.length))
+    #     self.velocities = np.zeros((N_dim, self.length))
+    #     self.accelerations = np.zeros((N_dim, self.length))
+    def __init__(self, time, positions, velocities, accelerations):
         """Initialize a trajectory with 0 position, velocity, and acceleration"""
-        self.T = T
-        self.length = len(T)
-        self.N_dim = N_dim
-        self.P = np.zeros((N_dim, self.length))
-        self.V = np.zeros((N_dim, self.length))
-        self.A = np.zeros((N_dim, self.length))
+        self.length = len(time)
+        self.N_dim = positions.shape[0]
+        self.time = time
+        self.positions = positions
+        self.velocities = velocities
+        self.accelerations = accelerations
+
+
+def wrap_2D_traj_msg(traj, t2start):
+    """Wraps a 2-D trajectory in a JointTrajectory message.
+
+    Parameters
+    ----------
+    traj : tuple (p,v,a) of np.array (2 x N)
+        Trajectory containing position, velocity, and acceleration
+    t2start : float
+        Time to start in seconds
+
+    Returns
+    -------
+    JointTrajectory 
+        Wrapped message.
+
+    """
+    p,v,a = traj
+    traj_msg = JointTrajectory()
+
+    jtp_x = JointTrajectoryPoint()
+    jtp_x.positions = p[0]
+    jtp_x.velocities = v[0]
+    jtp_x.accelerations = a[0]
+    jtp_x.time_from_start = rospy.Duration(t2start)
+
+    jtp_y = JointTrajectoryPoint()
+    jtp_y.positions = p[1]
+    jtp_y.velocities = v[1]
+    jtp_y.accelerations = a[1]
+    jtp_y.time_from_start = rospy.Duration(t2start)
+
+    traj_msg.points = [jtp_x, jtp_y]
+    traj_msg.joint_names = ['x','y']
+
+    return traj_msg
+
+
+def unwrap_2D_traj_msg(msg, time):
+    """Convert JointTrajectory message to Trajectory class
+
+    Parameters
+    ----------
+    msg : JointTrajectory 
+        JointTrajectory message
+    time : np.array (1 x N)
+        Time vector
+
+    Returns
+    -------
+    Trajectory
+        Trajectory wrapped in class
+
+    """
+    px = msg.points[0].positions
+    py = msg.points[1].positions
+    vx = msg.points[0].velocities
+    vy = msg.points[1].velocities
+    ax = msg.points[0].accelerations
+    ay = msg.points[1].accelerations
+
+    pos = np.vstack((px, py))
+    vel = np.vstack((vx, vy))
+    acc = np.vstack((ax, ay))
+
+    return Trajectory(time, pos, vel, acc)
 
 
 
