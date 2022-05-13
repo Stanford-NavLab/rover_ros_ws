@@ -3,6 +3,7 @@
 import rospy
 import numpy as np
 import time
+import ros_numpy
 
 from scipy.spatial.transform import Rotation as R
 from geometry_msgs.msg import PoseStamped
@@ -40,9 +41,10 @@ class Lidar():
         self.height = data.height
         self.width = data.width
 
-        print(data.fields)
+        #print(data.height)
+        P = ros_numpy.point_cloud2.pointcloud2_to_xyz_array(data)
 
-        #print("Point cloud with height ", data.height, " and width ", data.width)
+        print("Points shape ", P.shape)
         #rospy.loginfo("Point cloud: (%f, %f, %f)", self.x, self.y, self.theta)
 
 
