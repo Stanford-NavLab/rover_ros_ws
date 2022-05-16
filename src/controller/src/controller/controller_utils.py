@@ -2,6 +2,7 @@
 
 import rospy
 import numpy as np
+from numpy.polynomial.polynomial import polyval2d
 
 def compute_control(x_nom, u_nom, x_hat, K):
     """Compute total control input vector
@@ -59,69 +60,61 @@ def compute_control(x_nom, u_nom, x_hat, K):
     return u
 
 
-def omega_to_PWM(omega):
-    """Mapping from desired angular velocity (rad/s) to PWM
+def ang_PWM(v, w):
+    """Mapping from desired linear velocity (m/s) and angular
+    velocity (rad/s) to angular PWM
 
     Parameters
     ----------
-    omega : float
+    v : float
+        desired linear velocity
+    w : float
         desired angular velocity
     
     Returns
     -------
     pwm : float
         pwm value between -1 and 1
+
     """
-    # Linear zone
-    if np.abs(omega) < 0.7301:
-        return (0.08/0.7301) * omega 
+    # Polynomial fit from data
+    # Coefficients of p(x,y) = c00 + c10*x + c01*y + c20*x^2 + c11*x*y + c02*y^2 + c30*x^3 
+    #                          + c21*x^2*y + c12*x*y^2 + c03*y^3
+    C = np.array([[-0.00581, 0.2623, -0.004842, -0.06905],
+                  [0.02074, -0.2124, 0.02372, 0.0],
+                  [-0.06311, 0.3288, 0.0, 0.0],
+                  [0.06762, 0.0, 0.0, 0.0]])
+    pwm = polyval2d(v, w, C)
 
-    # Positive
-    elif omega > 0:
-
-        # clip desired velocity to tested range (0 to 4.1997 rad/s)
-        omega = np.clip(omega, 0.0, 4.1997)
-
-        # use a polynomial fit to data
-        p = [0.0180, -0.0751, 0.2235, 0.0708]
-        pwm = (0.08/0.2) * np.polyval(p, omega)
-
-        # clip to between 0 and 1
-        return np.clip(pwm, 0.0, 1.0)
-
-    # Negative
-    else:
-        omega = -omega
-        omega = np.clip(omega, 0.0, 4.1997)
-
-        p = [0.0180, -0.0751, 0.2235, 0.0708]
-        pwm = (0.08/0.2) * np.polyval(p, omega)
-
-        return np.clip(-pwm, -1.0, 0.0)
+    # clip to between -1 and 1
+    return np.clip(pwm, -1.0, 1.0)
 
 
-def v_to_PWM(v):
-    """Mapping from desired linear velocity (m/s) to PWM
+def lin_PWM(v, w):
+    """Mapping from desired linear velocity (m/s) and angular
+    velocity (rad/s) to linear PWM
 
     Parameters
     ----------
     v : float
         desired linear velocity
+    w : float
+        desired angular velocity
     
     Returns
     -------
     pwm : float
         pwm value between 0 and 1
+
     """
-    if np.abs(v) < 0.26:
-        return (0.2/0.26) * v
-
-    # clip desired velocity to tested range (0 to 1.25 m/s)
-    v = np.clip(v, 0.0, 1.25)
-
-    # use a polynomial fit to data
-    p = [1.2377, -1.9013, 1.2622, -0.0227]
-    pwm = np.polyval(p, v)
+    # Polynomial fit from data
+    # Coefficients of p(x,y) = c00 + c10*x + c01*y + c20*x^2 + c11*x*y + c02*y^2 + c30*x^3 
+    #                          + c21*x^2*y + c12*x*y^2 + c03*y^3
+    C = np.array([[0.1181, 0.007321, -0.05408, -0.004855],
+                  [0.1276, -0.03117, 0.1554, 0.0],
+                  [0.7645, 0.08861, 0.0, 0.0],
+                  [-0.691, 0.0, 0.0, 0.0]])
+    pwm = polyval2d(v, w, C)
 
     # clip to between 0 and 1
     return np.clip(pwm, 0.0, 1.0)
