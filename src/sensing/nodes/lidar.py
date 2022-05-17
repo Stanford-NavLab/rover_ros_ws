@@ -3,6 +3,7 @@
 import rospy
 import numpy as np
 import time
+import os
 import ros_numpy
 
 from scipy.spatial.transform import Rotation as R
@@ -31,6 +32,9 @@ class Lidar():
         # Publishers and subscribers
         pointcloud_sub = rospy.Subscriber('velodyne_points', PointCloud2, self.pointcloud_callback)
 
+        self.path = '/home/navlab-nuc/Rover/lidar_data/5_15_2022/fr_config_5'
+        self.frame_num = 0
+
 
     def pointcloud_callback(self, data):
         """Point cloud subscriber callback
@@ -46,6 +50,11 @@ class Lidar():
 
         print("Points shape ", P.shape)
         #rospy.loginfo("Point cloud: (%f, %f, %f)", self.x, self.y, self.theta)
+
+        # Save points as .npy
+        filename = 'pc_'+str(self.frame_num)+'.npy'
+        np.save(os.path.join(self.path, filename), P)
+        self.frame_num += 1
 
 
 
