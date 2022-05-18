@@ -7,7 +7,7 @@ import os
 import ros_numpy
 
 from scipy.spatial.transform import Rotation as R
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import Point, PoseStamped
 from std_msgs.msg import Float64
 from sensor_msgs.msg import PointCloud2
 
@@ -23,17 +23,28 @@ class Lidar():
 
         # Initialize node 
         rospy.init_node('Lidar', anonymous=True)
-        self.rate = rospy.Rate(100)
+        self.rate = rospy.Rate(5)  # Same as controller rate
 
         # Class variables
-        self.height = None
-        self.width = None
+        self.heading = None
+        self.landmark_pos = None
 
         # Publishers and subscribers
         pointcloud_sub = rospy.Subscriber('velodyne_points', PointCloud2, self.pointcloud_callback)
+        imu_sub = rospy.Subscribe('sensing/imu/heading', Float64, self.imu_callback)
+        detection_pub = rospy.Publisher('sensing/lidar/pos_measurement', Point, queue_size=10)
 
         self.path = '/home/navlab-nuc/Rover/lidar_data/5_15_2022/fr_config_5'
         self.frame_num = 0
+
+
+    def imu_callback(self, data):
+        """IMU callback
+        
+        Store heading.
+
+        """
+        self.heading = data.data
 
 
     def pointcloud_callback(self, data):
@@ -56,13 +67,22 @@ class Lidar():
         np.save(os.path.join(self.path, filename), P)
         self.frame_num += 1
 
+    
+    def publish_detection(self):
+        """Publish detection
+        
+        """
+        p = Point()
+        p.x = self.landmark_pos[0]
+        p.y = self.landmark_pos[1]
+        self.detection_pub.publish(p)
 
 
     def run(self):
         rospy.loginfo("Running Lidar node")
         while not rospy.is_shutdown():
             
-            pass
+            self.publish_detection()
 
             self.rate.sleep()
         

@@ -63,6 +63,9 @@ ENV_INFO['bias_area_lims'] = [BIAS_ARR[0,0]-BIAS_ARR[3,0],
                               BIAS_ARR[1,0]+BIAS_ARR[2,0]]
 ENV_INFO['regular_bias'] = 0.0; ENV_INFO['different_bias'] = BIAS_MAX_VAL
 
+LANDMARK_POS = np.array([-2, 0])[:,None]  # Landmark position
+LANDMARK_REGION_W = 1.0  # Width of landmark search region box  
+
 MAX_SEGMENTS = 20
 
 MODEL_NAME = "unicycle_reach_goal"

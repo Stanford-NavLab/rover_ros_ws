@@ -164,6 +164,7 @@ target_link_libraries(pcl_filter
 catkin_install_python(PROGRAMS
   nodes/mocap.py
   nodes/lidar.py
+  nodes/imu.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

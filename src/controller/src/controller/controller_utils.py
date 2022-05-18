@@ -24,35 +24,8 @@ def compute_control(x_nom, u_nom, x_hat, K):
         total control input
     """
     # Get error between estimated and nominal states
-    #   such that negative error implies we should apply negative PWM
     err = x_hat - x_nom
-    # Wrap theta 
-    err[2] = wrap_angle(err[2])
-    
-    print(" - x_nom: ", np.round(x_nom[0],2), " y_nom: ", np.round(x_nom[1],2))
-    print(" - x_err: ", np.round(err[0],2), " y_err: ", np.round(err[1],2))
-    # print(" K: ", np.round(K,2))
-    # print(" x_hat: ", x_hat)
-    # print(" x_nom: ", x_nom)
-    # print(" ----------------")
-    # print(" x error: ", err[0])
-    # print(" y error: ", err[1])
-    # print(" theta error: ", err[2])
-    # print(" v hat: ", x_hat[3])
-    # print(" v nom: ", x_nom[3])
-    # print(" v error: ", err[3])
-    # print(" ----------------")
-    # print(" u_a x contribution: ", K[1][0]*err[0])
-    # print(" u_a y contribution: ", K[1][1]*err[1])
-    # print(" u_a theta contribution: ", K[1][2]*err[2])
-    # print(" u_a v contribution: ", K[1][3]*err[3])
-    # print(" ----------------")
-    # print(" u_w x contribution: ", K[0][0]*err[0])
-    # print(" u_w y contribution: ", K[0][1]*err[1])
-    # print(" u_w theta contribution: ", K[0][2]*err[2])
-    # print(" u_w v contribution: ", K[0][3]*err[3])
-    # print(" ----------------")
-    # print(" K @ err: ", K @ err)
+    err[2] = wrap_angle(err[2])  # Wrap theta 
 
     # Compute total control input
     u = u_nom - K @ err
@@ -144,10 +117,11 @@ def EKF_prediction_step(x_hat, u, P, A, Q, dt):
         predicted state
     P_pred : np.array (4x4)
         predicted state estimation covariance matrix
+
     """
-    #compute predicted state
+    # Compute predicted state
     x_pred = x_hat + np.array([ [x_hat[3,0]*np.cos(x_hat[2,0])], [x_hat[3,0]*np.sin(x_hat[2,0])], [u[0,0]], [u[1,0]] ])*dt;
-    #compute predicted state estimation covariance matrix
+    # Compute predicted state estimation covariance matrix
     P_pred = A @ P @ A.T + Q
 
     return x_pred, P_pred
@@ -178,16 +152,13 @@ def EKF_correction_step(x_pred, P_pred, z, C, R):
         corrected state estimation covariance matrix
     L : np.array (4x3)
         Kalman gain matrix
+
     """
-    #compute Kalman gain
+    # Compute Kalman gain
     L = P_pred @ C.T @ np.linalg.inv(C @ P_pred @ C.T + R)
-    # print(" L: ", L)
-    # print(" z: ", z)
-    # print(" C @ x_pred: ", C @ x_pred)
-    # print(" correction term: ", L @ (z - C @ x_pred))
-    #compute corrected state estimate
+    # Compute corrected state estimate
     x_hat = x_pred + L @ (z - C @ x_pred)
-    #compute corrected state estimation covariance matrix
+    # Compute corrected state estimation covariance matrix
     P = P_pred - L @ C @ P_pred
 
     return x_hat, P

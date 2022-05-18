@@ -17,10 +17,8 @@ class Mocap():
 
     """
     def __init__(self):
-        # Parameters (eventually make these global)
-
         # Initialize node 
-        rospy.init_node('Mocap', anonymous=True)
+        rospy.init_node('mocap', anonymous=True)
         self.rate = rospy.Rate(100)
 
         # Class variables
