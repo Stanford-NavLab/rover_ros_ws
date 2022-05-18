@@ -42,6 +42,21 @@ def rotate_points(P, theta):
     return (R @ P.T).T
 
 
+### NOTE: FOR DEBUGGING ###
+def process_points(P, x_hat, d_thresh=6.0):
+    P = dist_filter(P, d_thresh)
+    # Ground removal
+    P = P[P[:,2] > -params.LIDAR_HEIGHT,:] 
+    
+    # Transform to global frame in 2D
+    P_2D = P[:,:2]
+    P_2D_global = rotate_points(P_2D, x_hat[2][0])
+    P_2D_global = P_2D_global + x_hat[:2].flatten()
+    return P_2D_global
+
+
+
+
 def detect_landmark(P, x_hat, d_thresh=6.0):
     """Detect landmark
 
@@ -67,8 +82,8 @@ def detect_landmark(P, x_hat, d_thresh=6.0):
     
     # Transform to global frame in 2D
     P_2D = P[:,:2]
-    P_2D_global = rotate_points(P_2D, x_hat[2])
-    P_2D_global = P_2D_global + x_hat[:2]
+    P_2D_global = rotate_points(P_2D, x_hat[2][0])
+    P_2D_global = P_2D_global + x_hat[:2].flatten()
     
     # Use search region to extract landmark points in global frame
     mask = np.ones(len(P), dtype=bool)
@@ -76,7 +91,9 @@ def detect_landmark(P, x_hat, d_thresh=6.0):
     mask = mask & ((P_2D_global[:,1] <= params.LM_BOX_YMAX) & (P_2D_global[:,1] >= params.LM_BOX_YMIN))
 
     # TODO: handle case where mask is empty
-    
+    if sum(mask) == 0:
+        print("No landmark points detected")
+
     # Index back in local frame
     landmark_pts = P[mask]
     
@@ -90,5 +107,8 @@ def get_pos_measurement(P, x_hat):
     to determine absolute position estimate.
     
     """
-    landmark_pos_local = detect_landmark(P, x_hat)
-    return params.LANDMARK_POS - landmark_pos_local
+    robot_to_landmark_local = detect_landmark(P, x_hat)
+    # Rotate robot to landmark vector and offset vector to global frame
+    robot_to_landmark_global = rotate_points(robot_to_landmark_local, x_hat[2][0])
+    lidar_offset_global = rotate_points(params.LIDAR_OFFSET, x_hat[2][0])
+    return params.LANDMARK_POS - robot_to_landmark_global - lidar_offset_global

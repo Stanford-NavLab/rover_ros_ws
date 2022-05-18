@@ -10,7 +10,7 @@ from geometry_msgs.msg import Twist, PoseStamped
 from std_msgs.msg import Float64
 
 from planner.msg import State, Control, NominalTrajectory
-from controller.controller_utils import compute_control, v_to_PWM, omega_to_PWM, EKF_prediction_step, EKF_correction_step
+from controller.controller_utils import compute_control, lin_PWM, ang_PWM, EKF_prediction_step, EKF_correction_step
 from planner.planner_utils import wrap_states
 from planner.reachability_utils import generate_robot_matrices
 import params.params as params
@@ -137,8 +137,8 @@ class traj_tracker():
         
         # Closed-loop
         self.v_des += params.DT * u[1][0]  # integrate acceleration
-        motor_cmd.linear.x = v_to_PWM(self.v_des)
-        motor_cmd.angular.z = omega_to_PWM(u[0][0])
+        motor_cmd.linear.x = lin_PWM(self.v_des, u[0][0])
+        motor_cmd.angular.z = ang_PWM(self.v_des, u[0][0])
 
         print(" - v_des: ", round(self.v_des,2), " u_a: ", round(u[1][0],2), " u_w: ", round(u[0][0],2))
         print(" - lin PWM: ", round(motor_cmd.linear.x,2), ", ang PWM: ", round(motor_cmd.angular.z,2))

@@ -9,12 +9,12 @@ import ros_numpy
 
 from scipy.spatial.transform import Rotation as R
 from geometry_msgs.msg import Point, PoseStamped
-from std_msgs.msg import Float64
-from sensor_msgs.msg import PointCloud2
+from std_msgs.msg import Float64, Header
+from sensor_msgs.msg import PointCloud2, PointCloud
 
 from planner.msg import State
 import params.params as params
-from sensing.lidar_utils import get_pos_measurement
+from sensing.lidar_utils import get_pos_measurement, process_points
 
 
 class Lidar():
@@ -35,11 +35,14 @@ class Lidar():
 
         # Publishers
         self.pos_measurement_pub = rospy.Publisher('sensing/lidar/pos_measurement', Point, queue_size=10)
+        ### For debugging
+        self.pc_pub = rospy.Publisher('sensing/debug/pc', PointCloud, queue_size=10)
 
         # Subscribers
         pointcloud_sub = rospy.Subscriber('velodyne_points', PointCloud2, self.pointcloud_callback)
-        imu_sub = rospy.Subscribe('sensing/imu/heading', Float64, self.imu_callback)
-        state_est_sub = rospy.Subscriber('controller/state_est', State, self.state_est_callback)
+        imu_sub = rospy.Subscriber('sensing/imu/heading', Float64, self.imu_callback)
+        #state_est_sub = rospy.Subscriber('controller/state_est', State, self.state_est_callback)
+        state_est_sub = rospy.Subscriber('sensing/mocap', State, self.state_est_callback)
 
         self.path = '/home/navlab-nuc/Rover/lidar_data/5_15_2022/fr_config_5'
         self.frame_num = 0
@@ -70,10 +73,25 @@ class Lidar():
 
         """
         P = ros_numpy.point_cloud2.pointcloud2_to_xyz_array(data)
-        print("Points shape ", P.shape)
+        #print("Points shape ", P.shape)
 
         if self.x_hat is not None:
             self.pos_measurement = get_pos_measurement(P, self.x_hat)
+            # P_2D_global = process_points(P, self.x_hat)
+            # PC = PointCloud()
+            # points = []
+            # for p in P_2D_global:
+            #     P = Point()
+            #     P.x = p[0]
+            #     P.y = p[1]
+            #     P.z = 0
+            #     points.append(P)
+            # PC.points = points
+            # header = Header()
+            # header.frame_id = "velodyne"
+            # PC.header = header
+            # self.pc_pub.publish(PC)
+
         else:
             print("Waiting for initial state estimate")
 
@@ -98,7 +116,7 @@ class Lidar():
         rospy.loginfo("Running Lidar node")
         while not rospy.is_shutdown():
             
-            if self.landmark_pos is not None:
+            if self.pos_measurement is not None:
                 self.publish_measurement()
 
             self.rate.sleep()
