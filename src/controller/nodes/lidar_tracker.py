@@ -6,7 +6,7 @@ import csv
 import os
 
 from scipy.spatial.transform import Rotation as R
-from geometry_msgs.msg import Twist, QuaternionStamped
+from geometry_msgs.msg import Point, Twist, QuaternionStamped
 from std_msgs.msg import Float64
 
 from planner.msg import State, Control, NominalTrajectory
@@ -40,6 +40,8 @@ class lidar_tracker():
 
         self.z = np.zeros((3,1))  # measurement
         self.z_gt = np.zeros((3,1))  # ground-truth measurement (no noise)
+        self.imu_heading = 0  
+
         self.v_des = 0
         self.t_start = 0
 
@@ -48,13 +50,12 @@ class lidar_tracker():
         # Publishers
         self.cmd_pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
         self.state_est_pub = rospy.Publisher('controller/state_est', State, queue_size=1)
-        self.debug_pub = rospy.Publisher('debug/x_err', Float64, queue_size=1)
 
         # Subscribers
         traj_sub = rospy.Subscriber('planner/traj', NominalTrajectory, self.traj_callback)
-        measurement_sub = rospy.Subscriber('sensing/mocap_noisy', State, self.measurement_callback)
-        gt_sub = rospy.Subscriber('sensing/mocap', State, self.gt_callback)
-        imu_sub = rospy.Subscriber('filter/quaternion', QuaternionStamped, self.imu_callback)
+        lidar_sub = rospy.Subscriber('sensing/lidar/pos_measurement', Point, self.lidar_callback)
+        imu_sub = rospy.Subscriber('sensing/imu/heading', Float64, self.imu_callback)
+        mocap_sub = rospy.Subscriber('sensing/mocap', State, self.mocap_callback)
 
         # Logging
         path = '/home/navlab-nuc/Rover/flightroom_data/4_12_2022/debug/'
@@ -68,10 +69,10 @@ class lidar_tracker():
     def imu_callback(self, data):
         """IMU subscriber callback
         
-        Save orientation data from IMU.
+        Save heading from IMU.
         
         """
-        ### TODO ###
+        self.imu_heading = data.data
 
 
     def traj_callback(self, data):
@@ -85,6 +86,8 @@ class lidar_tracker():
         if self.X_nom_curr is None:
             self.X_nom_curr = data.states 
             self.U_nom_curr = data.controls 
+            # Publish initial state estimate (for lidar node)
+            self.state_est_pub.publish(data.states[0])
         # Otherwise, set next trajectory
         else:
             self.X_nom_next = data.states 
@@ -92,18 +95,8 @@ class lidar_tracker():
         rospy.loginfo("Received trajectory of length %d", len(data.states))
 
 
-    def measurement_callback(self, data):
-        """Measurement subscriber callback.
-
-        Save received measurement.
-
-        """
-        # For mocap measurement
-        self.z = np.array([[data.x],[data.y],[data.theta]])
-
-
-    def gt_callback(self, data):
-        """Ground-truth subscriber callback.
+    def mocap_callback(self, data):
+        """Mocap subscriber callback.
 
         Save received ground-truth.
 
@@ -112,17 +105,23 @@ class lidar_tracker():
         self.z_gt = np.array([[data.x],[data.y],[data.theta]])
 
 
-    ### TODO: make track the callback for lidar measurements
+    def lidar_callback(self, data):
+        """Lidar subscriber callback
 
-    def track(self, data):
+        Process lidar relative position measurement and run track.
+        
+        """
+        # Form measurement z
+        z = np.array([data.x, data.y, self.imu_heading])[:,None]  # (x, y, theta)
+        # Call track
+        self.track(z)
+
+
+    def track(self, z):
         """Track next point in the current trajectory, and run the EKF for estimation.
-
-        TODO
 
         """
         print("idx ", self.idx, " ----------------------------------------")
-
-        ### TODO: extract lidar relative position measurements
 
         x_nom_msg = self.X_nom_curr[self.idx]
         x_nom = np.array([[x_nom_msg.x],[x_nom_msg.y],[x_nom_msg.theta],[x_nom_msg.v]])
@@ -138,7 +137,7 @@ class lidar_tracker():
         #               [0, 0, 0, 1]])
 
         # ======== EKF Update ========
-        self.x_hat, self.P = EKF_correction_step(self.x_hat, self.P, self.z, C, params.R_EKF)
+        self.x_hat, self.P = EKF_correction_step(self.x_hat, self.P, z, C, params.R_EKF)
         self.state_est_pub.publish(wrap_states(self.x_hat)[0])
 
         # ======== Apply feedback control law ========
@@ -159,7 +158,7 @@ class lidar_tracker():
 
         self.idx += 1
 
-        # Log data
+        # Log data TODO: update this
         self.logger.writerow([rospy.get_time(), self.z_gt[0][0], self.z_gt[1][0], self.z_gt[2][0], 
                               self.z[0][0], self.z[1][0], self.z[2][0],
                               x_nom[0][0], x_nom[1][0], x_nom[2][0], x_nom[3][0], self.x_hat[0][0], 
@@ -199,10 +198,6 @@ class lidar_tracker():
         # ======== EKF Predict ========
         self.x_hat, self.P = EKF_prediction_step(self.x_hat, u, self.P, A, params.Q_EKF, params.DT)
 
-        # ======== Debugging ========
-        x_err = self.z[0] - x_nom[0]
-        self.debug_pub.publish(x_err)
-
     
     def stop_motors(self):
         """Send stop command to all motors
@@ -232,8 +227,8 @@ class lidar_tracker():
 
 
 if __name__ == '__main__':
-    tt = traj_tracker()
+    lt = lidar_tracker()
     try:
-        tt.run()
+        lt.run()
     except rospy.ROSInterruptException:
         pass

@@ -56,8 +56,8 @@ def detect_landmark(P, x_hat, d_thresh=6.0):
     
     Returns
     -------
-    np.array (3)
-        Estimated 3D landmark position in local frame
+    np.array (2)
+        Estimated 2D landmark position in local frame
     
     """
     # Distance filter  NOTE: may not be needed anymore
@@ -74,8 +74,21 @@ def detect_landmark(P, x_hat, d_thresh=6.0):
     mask = np.ones(len(P), dtype=bool)
     mask = mask & ((P_2D_global[:,0] <= params.LM_BOX_XMAX) & (P_2D_global[:,0] >= params.LM_BOX_XMIN))
     mask = mask & ((P_2D_global[:,1] <= params.LM_BOX_YMAX) & (P_2D_global[:,1] >= params.LM_BOX_YMIN))
+
+    # TODO: handle case where mask is empty
     
     # Index back in local frame
     landmark_pts = P[mask]
     
-    return np.mean(landmark_pts, axis=0)
+    return np.mean(landmark_pts[:,:2], axis=0)
+
+
+def get_pos_measurement(P, x_hat):
+    """Get position measurement
+    
+    Given point cloud and state estimate, detect landmark and use relative position
+    to determine absolute position estimate.
+    
+    """
+    landmark_pos_local = detect_landmark(P, x_hat)
+    return params.LANDMARK_POS - landmark_pos_local
