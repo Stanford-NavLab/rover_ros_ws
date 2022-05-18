@@ -1,5 +1,11 @@
+# ROS 
 logs/
 build/
 devel/
 .catkin_tools/
+
+# Data
 src/sensing/data
+
+# Python
+__pycache__/

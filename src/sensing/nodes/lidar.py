@@ -13,6 +13,8 @@ from sensor_msgs.msg import PointCloud2
 
 from planner.msg import State
 import params.params as params
+from sensing.lidar_utils import detect_landmark
+
 
 class Lidar():
     """Process LiDAR point cloud measurements
@@ -32,7 +34,7 @@ class Lidar():
         # Publishers and subscribers
         pointcloud_sub = rospy.Subscriber('velodyne_points', PointCloud2, self.pointcloud_callback)
         imu_sub = rospy.Subscribe('sensing/imu/heading', Float64, self.imu_callback)
-        detection_pub = rospy.Publisher('sensing/lidar/pos_measurement', Point, queue_size=10)
+        pos_measurement_pub = rospy.Publisher('sensing/lidar/pos_measurement', Point, queue_size=10)
 
         self.path = '/home/navlab-nuc/Rover/lidar_data/5_15_2022/fr_config_5'
         self.frame_num = 0
@@ -68,14 +70,14 @@ class Lidar():
         self.frame_num += 1
 
     
-    def publish_detection(self):
-        """Publish detection
+    def publish_measurement(self):
+        """Publish measurement
         
         """
         p = Point()
         p.x = self.landmark_pos[0]
         p.y = self.landmark_pos[1]
-        self.detection_pub.publish(p)
+        self.pos_measurement_pub.publish(p)
 
 
     def run(self):

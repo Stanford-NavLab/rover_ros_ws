@@ -63,8 +63,13 @@ ENV_INFO['bias_area_lims'] = [BIAS_ARR[0,0]-BIAS_ARR[3,0],
                               BIAS_ARR[1,0]+BIAS_ARR[2,0]]
 ENV_INFO['regular_bias'] = 0.0; ENV_INFO['different_bias'] = BIAS_MAX_VAL
 
-LANDMARK_POS = np.array([-2, 0])[:,None]  # Landmark position
-LANDMARK_REGION_W = 1.0  # Width of landmark search region box  
+LANDMARK_POS = np.array([-2.41, 0.34])  # Landmark ground-truth position [m]
+LM_BOX_W = 1.0  # Width of landmark search region box [m]
+LM_BOX_XMAX = LANDMARK_POS[0] + LM_BOX_W / 2  
+LM_BOX_XMIN = LANDMARK_POS[0] - LM_BOX_W / 2
+LM_BOX_YMAX = LANDMARK_POS[1] + LM_BOX_W / 2
+LM_BOX_YMIN = LANDMARK_POS[1] - LM_BOX_W / 2
+LIDAR_HEIGHT = 0.15  # Height of LiDAR off the ground [m]
 
 MAX_SEGMENTS = 20
 
