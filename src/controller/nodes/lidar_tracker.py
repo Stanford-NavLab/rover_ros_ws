@@ -41,6 +41,7 @@ class lidar_tracker():
         self.z = np.zeros((3,1))  # measurement
         self.z_gt = np.zeros((3,1))  # ground-truth measurement (no noise)
         self.imu_heading = 0  
+        self.init_heading = None
 
         self.v_des = 0
         self.t_start = 0
@@ -58,7 +59,7 @@ class lidar_tracker():
         mocap_sub = rospy.Subscriber('sensing/mocap', State, self.mocap_callback)
 
         # Logging
-        path = '/home/navlab-nuc/Rover/flightroom_data/4_12_2022/debug/'
+        path = '/home/navlab-nuc/Rover/flightroom_data/5_25_2022/'
         filename = 'track_'+str(rospy.get_time())+'.csv'
         self.logger = csv.writer(open(os.path.join(path, filename), 'w'))
         self.logger.writerow(['t', 'x', 'y', 'theta', 'z_x', 'z_y', 'z_theta', 
@@ -72,7 +73,9 @@ class lidar_tracker():
         Save heading from IMU.
         
         """
-        self.imu_heading = data.data
+        if self.init_heading is None:
+            self.init_heading = data.data
+        self.imu_heading = data.data - self.init_heading
 
 
     def traj_callback(self, data):
@@ -113,8 +116,10 @@ class lidar_tracker():
         """
         # Form measurement z
         z = np.array([data.x, data.y, self.imu_heading])[:,None]  # (x, y, theta)
-        # Call track
-        self.track(z)
+        
+        if self.X_nom_curr is not None:
+            # Call track
+            self.track(z)
 
 
     def track(self, z):
@@ -214,7 +219,7 @@ class lidar_tracker():
         """Run node
 
         """
-        rospy.loginfo("Running Trajectory Tracker")
+        rospy.loginfo("Running Lidar Tracker")
         while not rospy.is_shutdown():
 
             # Loop while track is called from lidar_callback

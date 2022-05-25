@@ -41,8 +41,8 @@ class Lidar():
         # Subscribers
         pointcloud_sub = rospy.Subscriber('velodyne_points', PointCloud2, self.pointcloud_callback)
         imu_sub = rospy.Subscriber('sensing/imu/heading', Float64, self.imu_callback)
-        #state_est_sub = rospy.Subscriber('controller/state_est', State, self.state_est_callback)
-        state_est_sub = rospy.Subscriber('sensing/mocap', State, self.state_est_callback)
+        state_est_sub = rospy.Subscriber('controller/state_est', State, self.state_est_callback)
+        #state_est_sub = rospy.Subscriber('sensing/mocap', State, self.state_est_callback)
 
         self.path = '/home/navlab-nuc/Rover/lidar_data/5_15_2022/fr_config_5'
         self.frame_num = 0
