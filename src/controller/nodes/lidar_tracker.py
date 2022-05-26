@@ -117,7 +117,7 @@ class lidar_tracker():
         # Form measurement z
         z = np.array([data.x, data.y, self.imu_heading])[:,None]  # (x, y, theta)
         
-        if self.X_nom_curr is not None:
+        if self.X_nom_curr is not None and not np.isnan(z[0]):
             # Call track
             self.track(z)
 
@@ -165,7 +165,7 @@ class lidar_tracker():
 
         # Log data TODO: update this
         self.logger.writerow([rospy.get_time(), self.z_gt[0][0], self.z_gt[1][0], self.z_gt[2][0], 
-                              self.z[0][0], self.z[1][0], self.z[2][0],
+                              z[0][0], z[1][0], z[2][0],
                               x_nom[0][0], x_nom[1][0], x_nom[2][0], x_nom[3][0], self.x_hat[0][0], 
                               self.x_hat[1][0], self.x_hat[2][0], self.x_hat[3][0], u[0][0], u[1][0]])
 
