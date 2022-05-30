@@ -55,7 +55,7 @@ def load_model(model_FileStr):
     """
     
     #get number of inputs and outputs for model
-    num_inputs  = 8; num_outputs = 2
+    num_inputs = 12; num_outputs = 2
 
     #load model to cpu
     use_cuda = False
@@ -85,7 +85,7 @@ def evaluate_model(model, x_nom):
     device   = torch.device("cuda" if use_cuda else "cpu")
 
     #get input state for model
-    state = torch.FloatTensor(np.concatenate((x_nom[:,[-1]],params.OBST_ARR),axis=0).T).to(device)
+    state = torch.FloatTensor(np.concatenate((x_nom[:,[-1]],params.OBST_ARR_1,params.OBST_ARR_2),axis=0).T).to(device)
 
     #get model output distribution
     dist, _ = model(state)

@@ -6,11 +6,11 @@ import csv
 import os
 
 from scipy.spatial.transform import Rotation as R
-from geometry_msgs.msg import Point, Twist, QuaternionStamped
+from geometry_msgs.msg import Point, Twist, PoseStamped
 from std_msgs.msg import Float64
 
 from planner.msg import State, Control, NominalTrajectory
-from controller.controller_utils import compute_control, lin_PWM, ang_PWM, EKF_prediction_step, EKF_correction_step
+from controller.controller_utils import wrap_angle, compute_control, lin_PWM, ang_PWM, EKF_prediction_step, EKF_correction_step
 from planner.planner_utils import wrap_states
 from planner.reachability_utils import generate_robot_matrices
 import params.params as params
@@ -56,11 +56,12 @@ class lidar_tracker():
         traj_sub = rospy.Subscriber('planner/traj', NominalTrajectory, self.traj_callback)
         lidar_sub = rospy.Subscriber('sensing/lidar/pos_measurement', Point, self.lidar_callback)
         imu_sub = rospy.Subscriber('sensing/imu/heading', Float64, self.imu_callback)
-        mocap_sub = rospy.Subscriber('sensing/mocap', State, self.mocap_callback)
+        #mocap_sub = rospy.Subscriber('sensing/mocap', State, self.mocap_callback)
+        mocap_sub = rospy.Subscriber('vrpn_client_node/rover/pose', PoseStamped, self.mocap_callback)
 
         # Logging
-        path = '/home/navlab-nuc/Rover/flightroom_data/5_25_2022/'
-        filename = 'track_'+str(rospy.get_time())+'.csv'
+        path = '/home/navlab-nuc/Rover/flightroom_data/5_30_2022/tracking_logs'
+        filename = 'lidar_track_'+str(rospy.get_time())+'.csv'
         self.logger = csv.writer(open(os.path.join(path, filename), 'w'))
         self.logger.writerow(['t', 'x', 'y', 'theta', 'z_x', 'z_y', 'z_theta', 
                               'x_nom', 'y_nom', 'theta_nom', 'v_nom', 
@@ -70,7 +71,7 @@ class lidar_tracker():
     def imu_callback(self, data):
         """IMU subscriber callback
         
-        Save heading from IMU.
+        Save heading from IMU. Zero out at start.
         
         """
         if self.init_heading is None:
@@ -105,7 +106,15 @@ class lidar_tracker():
 
         """
         # Mocap data
-        self.z_gt = np.array([[data.x],[data.y],[data.theta]])
+        pos = data.pose.position
+        q = data.pose.orientation
+
+        quat = np.array([q.x, q.y, q.z, q.w])
+        r = R.from_quat(quat)
+        theta = wrap_angle(r.as_euler('zyx')[0])
+
+        self.z_gt = np.array([pos.x, pos.y, theta])
+        #print(self.z_gt)
 
 
     def lidar_callback(self, data):
@@ -164,7 +173,7 @@ class lidar_tracker():
         self.idx += 1
 
         # Log data TODO: update this
-        self.logger.writerow([rospy.get_time(), self.z_gt[0][0], self.z_gt[1][0], self.z_gt[2][0], 
+        self.logger.writerow([rospy.get_time(), self.z_gt[0], self.z_gt[1], self.z_gt[2], 
                               z[0][0], z[1][0], z[2][0],
                               x_nom[0][0], x_nom[1][0], x_nom[2][0], x_nom[3][0], self.x_hat[0][0], 
                               self.x_hat[1][0], self.x_hat[2][0], self.x_hat[3][0], u[0][0], u[1][0]])

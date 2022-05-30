@@ -143,7 +143,6 @@ def check_trajectory_parameter_safety(kw, kv, x_nom0, Xaug0, P0, env):
     start_time = time.time()
     [xnom_seg, unom_seg] = trajectory_parameter_to_nominal_trajectory(
         kw, kv, x_nom0, params.T_SEG, params.DT, params.MAX_ACC_MAG)
-    print("Trajectory generated from parameter time: ", time.time() - start_time, " seconds")
 
     # Create motion and sensing pZs along nominal trajectory
     [WpZ, VpZs, Rhats] = reach_util.create_motion_sensing_pZ(

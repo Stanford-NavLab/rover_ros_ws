@@ -19,7 +19,7 @@ class Mocap():
     def __init__(self):
         # Initialize node 
         rospy.init_node('mocap', anonymous=True)
-        self.rate = rospy.Rate(100)
+        self.rate = rospy.Rate(10)
 
         # Class variables
         self.x = 0
@@ -52,6 +52,8 @@ class Mocap():
 
         rospy.loginfo("Received data: (%f, %f, %f)", self.x, self.y, self.theta)
 
+        self.publish()
+
 
     def publish(self):
         """Publish latest ground-truth and noisy measurements
@@ -75,8 +77,6 @@ class Mocap():
     def run(self):
         rospy.loginfo("Running Mocap node")
         while not rospy.is_shutdown():
-            
-            self.publish()
 
             self.rate.sleep()
         

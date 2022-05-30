@@ -22,7 +22,7 @@ class reach_planner():
 
     """
     def __init__(self):
-        np.random.seed(0)
+        #np.random.seed(0)
 
         # Initialize node 
         rospy.init_node('reach_planner', anonymous=True, disable_signals=True)
@@ -57,7 +57,7 @@ class reach_planner():
         self.seg_num = 1  # current segment number
 
         # Logging
-        path = '/home/navlab-nuc/flightroom_data/4_12_2022/debug/'
+        path = '/home/navlab-nuc/Rover/flightroom_data/4_12_2022/debug/'
         filename = 'reach_plan_'+str(rospy.get_time())+'.csv'
         self.log_file = open(os.path.join(path, filename), 'w')
         self.logger = csv.writer(self.log_file)
@@ -83,7 +83,6 @@ class reach_planner():
             # Get network output
             start_time = time.time()
             [action_mean, action_cov] = nn_util.evaluate_model(self.model, self.x_nom0)
-            print("Network inference time: ", time.time() - start_time, " seconds")
             kw0 = action_mean[0,0]; kv0 = action_mean[0,1]
             #print("  Network sampled parameters: kw = ", round(kw0,3), ", kv = ", round(kv0,3))
             self.logger.writerow([rospy.get_time(), kw0, kv0, 2])
@@ -91,7 +90,6 @@ class reach_planner():
             # Check if trajectory specified by above nominal trajectory is safe (fail-safe trajectory is appended)
             start_time = time.time()
             [safeTrajectoryFound, cand_Xaug, _, cand_P_all, cand_xnom_seg, cand_unom_seg] = plan_util.check_trajectory_parameter_safety(kw0, kv0, self.x_nom0, self.Xaug0, self.P0, params.ENV_INFO)
-            print("Safety check time: ", time.time() - start_time, " seconds")
 
             # If network output trajectory was safe
             if safeTrajectoryFound:
