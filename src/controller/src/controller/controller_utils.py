@@ -87,10 +87,14 @@ def lin_PWM(v, w):
                   [0.1276, -0.03117, 0.1554, 0.0],
                   [0.7645, 0.08861, 0.0, 0.0],
                   [-0.691, 0.0, 0.0, 0.0]])
-    pwm = polyval2d(v, w, C)
 
-    # clip to between 0 and 1
-    return np.clip(pwm, 0.0, 1.0)
+    if v < 0:
+        pwm = -polyval2d(-v, w, C)
+    else: 
+        pwm = polyval2d(v, w, C)
+
+    # clip to between -1 and 1
+    return np.clip(pwm, -1.0, 1.0)
 
 
 def EKF_prediction_step(x_hat, u, P, A, Q, dt):

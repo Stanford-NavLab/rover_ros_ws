@@ -57,7 +57,7 @@ def process_points(P, x_hat, d_thresh=6.0):
 
 
 
-def detect_landmark(P, x_hat, d_thresh=6.0):
+def detect_landmark(P, x_hat, d_thresh=10.0):
     """Detect landmark
 
     Given point cloud and state estimate, detect landmark position in robot local frame.
@@ -96,6 +96,9 @@ def detect_landmark(P, x_hat, d_thresh=6.0):
 
     # Index back in local frame
     landmark_pts = P[mask]
+
+    global_landmark_mean = np.mean(P_2D_global[mask], axis=0)
+    print("Landmark pts mean in global frame: ", global_landmark_mean)
     
     return np.mean(landmark_pts[:,:2], axis=0)
 

@@ -76,7 +76,7 @@ class lidar_tracker():
         """
         if self.init_heading is None:
             self.init_heading = data.data
-        self.imu_heading = data.data - self.init_heading
+        self.imu_heading = wrap_angle(data.data - self.init_heading)
 
 
     def traj_callback(self, data):

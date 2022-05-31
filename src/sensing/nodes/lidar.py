@@ -15,6 +15,7 @@ from sensor_msgs.msg import PointCloud2, PointCloud
 from planner.msg import State
 import params.params as params
 from sensing.lidar_utils import get_pos_measurement, process_points
+from controller.controller_utils import wrap_angle
 
 
 class Lidar():
@@ -42,7 +43,7 @@ class Lidar():
         pointcloud_sub = rospy.Subscriber('velodyne_points', PointCloud2, self.pointcloud_callback)
         imu_sub = rospy.Subscriber('sensing/imu/heading', Float64, self.imu_callback)
         state_est_sub = rospy.Subscriber('controller/state_est', State, self.state_est_callback)
-        #state_est_sub = rospy.Subscriber('sensing/mocap', State, self.state_est_callback)
+        #state_est_sub = rospy.Subscriber('vrpn_client_node/rover/pose', PoseStamped, self.state_est_callback)
 
         self.path = '/home/navlab-nuc/Rover/lidar_data/5_15_2022/fr_config_5'
         self.frame_num = 0
@@ -64,6 +65,13 @@ class Lidar():
 
         """
         self.x_hat = np.array([[data.x],[data.y],[data.theta],[data.v]])
+        #pos = data.pose.position
+        #q = data.pose.orientation
+
+        #quat = np.array([q.x, q.y, q.z, q.w])
+        #r = R.from_quat(quat)
+        #theta = wrap_angle(r.as_euler('zyx')[0])
+        #self.x_hat = np.array([[pos.x],[pos.y],[theta],[0]])
 
 
     def pointcloud_callback(self, data):

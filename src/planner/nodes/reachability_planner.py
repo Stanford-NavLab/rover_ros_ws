@@ -22,7 +22,7 @@ class reach_planner():
 
     """
     def __init__(self):
-        #np.random.seed(0)
+        np.random.seed(0)
 
         # Initialize node 
         rospy.init_node('reach_planner', anonymous=True, disable_signals=True)

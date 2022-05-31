@@ -35,7 +35,7 @@ class IMU_node():
 
         quat = np.array([q.x, q.y, q.z, q.w])
         r = R.from_quat(quat)
-        theta = wrap_angle(r.as_euler('zyx')[0])
+        theta = r.as_euler('zyx')[0]
 
         self.imu_pub.publish(theta)
         rospy.loginfo("Heading: %f", theta)
