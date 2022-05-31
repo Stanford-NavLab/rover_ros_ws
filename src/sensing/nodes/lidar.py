@@ -14,7 +14,7 @@ from sensor_msgs.msg import PointCloud2, PointCloud
 
 from planner.msg import State
 import params.params as params
-from sensing.lidar_utils import get_pos_measurement, process_points
+from sensing.lidar_utils import detect_landmark, get_pos_measurement, rotate_points
 from controller.controller_utils import wrap_angle
 
 
@@ -23,8 +23,6 @@ class Lidar():
 
     """
     def __init__(self):
-        # Parameters (eventually make these global)
-
         # Initialize node 
         rospy.init_node('Lidar', anonymous=True)
         self.rate = rospy.Rate(5)  # Same as controller rate
@@ -33,6 +31,10 @@ class Lidar():
         self.x_hat = None
         self.heading = None
         self.pos_measurement = None
+
+        # Relative vector from robot to landmark in robot local frame
+        # Initialize using robot initial state and landmark position
+        self.landmark_relative_vec = rotate_points(params.LANDMARK_POS - params.X_0[:2], params.X_0[2])
 
         # Publishers
         self.pos_measurement_pub = rospy.Publisher('sensing/lidar/pos_measurement', Point, queue_size=10)
@@ -81,32 +83,12 @@ class Lidar():
 
         """
         P = ros_numpy.point_cloud2.pointcloud2_to_xyz_array(data)
-        #print("Points shape ", P.shape)
 
         if self.x_hat is not None:
-            self.pos_measurement = get_pos_measurement(P, self.x_hat)
-            # P_2D_global = process_points(P, self.x_hat)
-            # PC = PointCloud()
-            # points = []
-            # for p in P_2D_global:
-            #     P = Point()
-            #     P.x = p[0]
-            #     P.y = p[1]
-            #     P.z = 0
-            #     points.append(P)
-            # PC.points = points
-            # header = Header()
-            # header.frame_id = "velodyne"
-            # PC.header = header
-            # self.pc_pub.publish(PC)
-
+            self.landmark_relative_vec = detect_landmark(P, self.landmark_relative_vec)
+            self.pos_measurement = get_pos_measurement(self.landmark_relative_vec, self.x_hat)
         else:
             print("Waiting for initial state estimate")
-
-        # # Save points as .npy
-        # filename = 'pc_'+str(self.frame_num)+'.npy'
-        # np.save(os.path.join(self.path, filename), P)
-        # self.frame_num += 1
 
     
     def publish_measurement(self):
