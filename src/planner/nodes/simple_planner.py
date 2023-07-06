@@ -50,8 +50,11 @@ class simple_planner():
         """
         rospy.loginfo("Generating nominal trajectory with w = %f, v = %f", kw, kv)
 
-        x_nom, u_nom = plan_util.trajectory_parameter_to_nominal_trajectory(
-            self.kw, self.kv, self.x_0, params.T_SEG, params.DT, params.MAX_ACC_MAG)
+        # x_nom, u_nom = plan_util.trajectory_parameter_to_nominal_trajectory(
+        #    self.kw, self.kv, self.x_0, params.T_SEG, params.DT, params.MAX_ACC_MAG)
+        x_nom, u_nom = plan_util.trajectory_parameter_to_nominal_trajectory(self.kw, self.kv, self.x_0, 10, params.DT, params.MAX_ACC_MAG)
+        print(x_nom)
+        print(u_nom)
 
         rospy.loginfo("Desired final state: x = %f, y = %f, theta = %f", x_nom[0][-1], x_nom[1][-1], x_nom[2][-1])
 

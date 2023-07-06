@@ -22,7 +22,7 @@ class reach_planner():
 
     """
     def __init__(self):
-        np.random.seed(0)
+        #np.random.seed(0)
 
         # Initialize node 
         rospy.init_node('reach_planner', anonymous=True, disable_signals=True)
@@ -57,7 +57,7 @@ class reach_planner():
         self.seg_num = 1  # current segment number
 
         # Logging
-        path = '/home/navlab-nuc/Rover/flightroom_data/4_12_2022/debug/'
+        path = '/home/navlab-nuc/Rover/flightroom_data/6_15_2022/planner_logs/'
         filename = 'reach_plan_'+str(rospy.get_time())+'.csv'
         self.log_file = open(os.path.join(path, filename), 'w')
         self.logger = csv.writer(self.log_file)

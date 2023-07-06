@@ -164,6 +164,7 @@ catkin_install_python(PROGRAMS
   nodes/open_loop_tracker.py
   nodes/linear_tracker.py
   nodes/lidar_tracker.py
+  nodes/file_traj_tracker.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

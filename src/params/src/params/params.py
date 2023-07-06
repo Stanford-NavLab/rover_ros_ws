@@ -35,8 +35,11 @@ COLLISION_CHECK_ZONOTOPE_ORDER = 4  # max order of confidence zonotope for colli
 # R_LQR = np.diag([50, 50])  # LQR control cost matrix
 
 # from simulation
-Q_LQR = np.diag([5, 5, 10, 100])  # LQR state cost matrix
-R_LQR = np.diag([10, 1])  # LQR control cost matrix
+# Q_LQR = np.diag([5, 5, 10, 100])  # LQR state cost matrix
+# R_LQR = np.diag([10, 1])  # LQR control cost matrix
+Q_LQR = np.diag([1, 1, 5, 50])  # LQR state cost matrix
+R_LQR = np.diag([5, 1])  # LQR control cost matrix
+
 
 # from initial flight room tests
 #Q_EKF = np.diag([0.01, 0.01, 0.05, 0.01])  # EKF process noise covariance
@@ -53,8 +56,10 @@ P_0 = 0.01 * np.diag(np.array([0.01, 0.01, 0.001, 0.0]))  # Initial state estima
 # Environment
 
 # In-distribution (uncertainty)
-OBST_ARR_1 = np.array([-1.88590713 , 0.73733016 , 0.80292901 , 0.8556909]).reshape((4,1))  # rectangular region: cx, cy, h, w
-OBST_ARR_2 = np.array([2.01000525 , -0.89226125 , 0.9561391 , 0.93830662]).reshape((4,1))  # rectangular region: cx, cy, h, w
+OBST_ARR_1 = np.array([1.0, 0.75, 0.895, 0.79]).reshape((4,1))  # rectangular region: cx, cy, h, w
+OBST_ARR_2 = np.array([-1.0, -0.75, 0.62, 0.79]).reshape((4,1))  # rectangular region: cx, cy, h, w
+#OBST_ARR_1 = np.array([-1.88590713, 0.73733016, 0.80292901, 0.8556909]).reshape((4,1))  # rectangular region: cx, cy, h, w
+#OBST_ARR_2 = np.array([2.01000525, -0.89226125, 0.9561391, 0.93830662]).reshape((4,1))  # rectangular region: cx, cy, h, w
 GOAL_ARR = np.array([5, 0, 2, 1]).reshape((4,1))  # cx, cy, h, w
 BIAS_ARR = np.array([0, 0, 20, 20]).reshape((4,1))  # cx, cy, h, w
 BIAS_MAX_VAL = 0.1  # value of max bias in positioning (each axis) measurement
@@ -71,7 +76,7 @@ ENV_INFO['bias_area_lims'] = [BIAS_ARR[0,0]-BIAS_ARR[3,0],
                               BIAS_ARR[1,0]+BIAS_ARR[2,0]]
 ENV_INFO['regular_bias'] = 0.0; ENV_INFO['different_bias'] = BIAS_MAX_VAL
 
-LANDMARK_POS = np.array([-2.15, 1.7])  # Landmark ground-truth position [m]
+LANDMARK_POS = np.array([1.1563, -0.7381])  # Landmark ground-truth position [m]
 LM_BOX_W = 1.0  # Width of landmark search region box [m]
 LM_BOX_XMAX = LANDMARK_POS[0] + LM_BOX_W / 2  
 LM_BOX_XMIN = LANDMARK_POS[0] - LM_BOX_W / 2

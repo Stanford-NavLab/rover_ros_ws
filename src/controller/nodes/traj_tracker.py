@@ -82,7 +82,7 @@ class traj_tracker():
             self.X_nom_next = data.states 
             self.U_nom_next = data.controls
         rospy.loginfo("Received trajectory of length %d", len(data.states))
-
+    
 
     def measurement_callback(self, data):
         """Measurement subscriber callback.
@@ -126,7 +126,7 @@ class traj_tracker():
         #               [0, 0, 0, 1]])
 
         # ======== EKF Update ========
-        self.x_hat, self.P = EKF_correction_step(self.x_hat, self.P, self.z, C, params.R_EKF)
+        self.x_hat, self.P = EKF_correction_step(self.x_hat, self.P, self.z_gt, C, params.R_EKF)
         self.state_est_pub.publish(wrap_states(self.x_hat)[0])
 
         # ======== Apply feedback control law ========

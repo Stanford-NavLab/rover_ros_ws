@@ -29,6 +29,8 @@ def compute_control(x_nom, u_nom, x_hat, K):
 
     # Compute total control input
     u = u_nom - K @ err
+    print("err: ", err)
+    print("K @ err: ", K @ err)
 
     return u
 

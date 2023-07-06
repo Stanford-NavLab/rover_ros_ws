@@ -163,8 +163,11 @@ target_link_libraries(pcl_filter
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   nodes/mocap.py
-  nodes/lidar.py
   nodes/imu.py
+  nodes/lidar_data_collection.py
+  nodes/lidar_LM_localization.py
+  nodes/lidar_plane_SLAM.py
+  nodes/camera_logger.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

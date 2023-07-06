@@ -20,6 +20,7 @@ def wrap_states(x_nom):
     -------
     states : State[]
         vector of state msgs
+        
     """
     N = x_nom.shape[1]
     states = [None] * N
@@ -47,6 +48,7 @@ def wrap_controls(u_nom):
     -------
     controls : Control[]
         vector of control msgs
+
     """
     N = u_nom.shape[1]
     controls = [None] * N
@@ -88,6 +90,7 @@ def trajectory_parameter_to_nominal_trajectory(kw, kv, xnom0, t_plan, dt, max_ac
         nominal states
     unom : np.array (2xN where N is trajectory length)
         nominal control inputs (angular velocity [rad/s], linear acceleration [m/s^2])
+
     """
 
     # Initialize nominal trajectory arrays

@@ -47,7 +47,7 @@ class nn_planner():
         self.seg_num = 1  # current segment number
 
         # Logging
-        path = '/home/navlab-nuc/Rover/flightroom_data/5_30_2022/planner_logs'
+        path = '/home/navlab-nuc/Rover/flightroom_data/6_15_2022/planner_logs'
         filename = 'nn_plan_'+str(rospy.get_time())+'.csv'
         self.log_file = open(os.path.join(path, filename), 'w')
         self.logger = csv.writer(self.log_file)
